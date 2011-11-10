@@ -1,1 +1,8 @@
+# vim stuff
 *.sw[a-z]
+
+# binary blobs
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+kurz
