@@ -1,55 +1,45 @@
 package main
 
 import (
-	"os"
-	"fmt"
-	"exec"
-	"flag"
-	"time"
+    "github.com/hoisie/web.go"
+    "encoding/base64"
+    "encoding/binary"
+    "strings"
+    /*"fmt"*/
 )
 
-
-const (
-	ANSI_ESCAPE = string(byte(27))
-	SECOND      = 1e9
-)
-
-func clearScreen() {
-	fmt.Printf("%s[2J%s[H", ANSI_ESCAPE, ANSI_ESCAPE)
+var counter = 0
+var allurls = map[string]string{
 }
 
-
-func printHead(interval int64, arguments []string) {
-	fmt.Printf("Every %ds: %s %40s\n", interval, arguments,
-		time.LocalTime().String())
+func resolve(ctx *web.Context, short string) {
+    redirect, found := allurls[short]
+    //fmt.Printf(encoded)
+    if found == true {
+        ctx.Redirect(302, redirect)
+    } else{
+        ctx.Redirect(404, "")
+    }
 }
 
+func store(ctx *web.Context, url string) string {
+    if ! strings.HasPrefix(url, "http"){
+        url = "http://" + url
+    }
+    counter += 1
+    request := ctx.Request
+    b := make([]byte, 4)
+    binary.BigEndian.PutUint32(b[0:], uint32(counter))
+    encoded := base64.StdEncoding.EncodeToString(b)
+    allurls[encoded] = url
+    return request.Proto + request.Host + "/" + encoded
 
-func every(interval int64, program string, arguments []string) {
-	clearScreen()
-	printHead(interval, arguments)
-	proc, err := exec.Run(program, arguments, nil, "",
-		exec.PassThrough,
-		exec.PassThrough,
-		exec.PassThrough)
-	if err != nil {
-		fmt.Printf("error spawning process: %s\n", err)
-		os.Exit(1)
-	}
-	proc.Wait(os.WSTOPPED)
-	time.Sleep(interval * SECOND)
 }
 
 
 func main() {
-	var interval int64
-	flag.Int64Var(&interval, "n", 1,
-		"seconds to wait between updates")
-	flag.Parse()
-	program, _ := exec.LookPath(flag.Arg(0))
-	var arguments = flag.Args()
-	for { // loop forever
-		every(interval, program, arguments)
-	}
-
+    web.Get("/store/(.*)", store)
+    web.Get("/(.*)", resolve)
+    web.Run("0.0.0.0:9999")
 }
+
