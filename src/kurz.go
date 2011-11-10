@@ -2,38 +2,42 @@ package main
 
 import (
     "github.com/hoisie/web.go"
-    "encoding/base64"
-    "encoding/binary"
     "strings"
-    /*"fmt"*/
+    "godis"
 )
 
 var counter = 0
-var allurls = map[string]string{
-}
+
+var redis = godis.New("", 0, "")
 
 func resolve(ctx *web.Context, short string) {
-    redirect, found := allurls[short]
-    //fmt.Printf(encoded)
-    if found == true {
-        ctx.Redirect(302, redirect)
-    } else{
-        ctx.Redirect(404, "")
-    }
+    redirect, _ := redis.Get(short)
+    ctx.Redirect(302, redirect.String())
 }
 
 func store(ctx *web.Context, url string) string {
     if ! strings.HasPrefix(url, "http"){
         url = "http://" + url
     }
-    counter += 1
     request := ctx.Request
-    b := make([]byte, 4)
-    binary.BigEndian.PutUint32(b[0:], uint32(counter))
-    encoded := base64.StdEncoding.EncodeToString(b)
-    allurls[encoded] = url
-    return request.Proto + request.Host + "/" + encoded
+    counter += 1
+    encoded := encode(counter)
+    redis.Set(encoded, url)
+    return request.Proto + request.Host + "/" + encoded + "\n"
 
+}
+
+
+func encode(number int) string{
+    const symbols string = "0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ"
+    const base int = len(symbols)
+    rest := number % base
+    result := string(symbols[rest])
+    if number - rest != 0{
+       newnumber := (number - rest ) / base
+       result = encode(newnumber) + result
+    }
+    return result
 }
 
 
