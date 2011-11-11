@@ -45,8 +45,11 @@ kurz.go, you could run multiple instances of it, but I have not tried it yet.
 
 Testing it out
 --------------
-the stuff directory contains a shellscript that imports the csv file into
+the stuff directory contains a shell-script that imports the csv file into
 kurz.go. Just try it out!
+
+Note: The csv file might contain some NSFW urls, I found it on the interwebs
+somewhere. You have been warned.
 
 Have fun with it!
 
