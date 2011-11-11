@@ -1,0 +1,52 @@
+kurz.go - a url shortener in go
+--------------------------------
+
+kurz.go is my attempt to write a program that is actually useful in go. Right
+now it is in alpha stage, but will eventually grow into a the real thing.
+
+Right now it can shorten URLs and redirect. All urls are stored in a redis
+(http://redis.io) instance, that is assumed to be running on the same host on
+the default port.
+
+
+Compiling kurz.go
+-----------------
+
+Next to having a full install of go itself, kurz.go requires web.go and godis to
+be installed. For installing go itself, please follow the fine instructions at
+http://golang.org
+
+For installing web.go do:
+
+    $ git clone https://github.com/hoisie/web.go.git
+    $ cd web.go
+    $ make install (should work agains the latest weekly release)
+
+for isntalling godis do:
+    $ git clone https://github.com/simonz05/godis.git
+    $ cd godis
+    $ make install
+
+Note: These modules will be installed into your $GOROOT, so make sure it is
+writable.
+
+Once the dependecies are installed, check out kurz.go:
+    $ git https://github.com/fs111/kurz.go
+    $ make
+    $ ./kurz #assumes that redis is up and running
+
+In order to shorten a url send it to http://localhost:9999/shorten/$url and in
+return you will get the shortened URL. If you open that URL, it will do the
+expected thing an redirect you to the original URL. 
+
+All urls are stored in redis and if you set it up so, that it actually persists
+file to disk, the state can be kept forever. Since there is no real state within
+kurz.go, you could run multiple instances of it, but I have not tried it yet.
+
+Testing it out
+--------------
+the stuff directory contains a shellscript that imports the csv file into
+kurz.go. Just try it out!
+
+Have fun with it!
+
