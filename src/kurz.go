@@ -9,7 +9,7 @@ import (
 
 const(
     // characters used for short-urls
-    SYMBOLS = "0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ()."
+    SYMBOLS = "0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ"
     // special key in redis, that is our global counter
     COUNTER = "__counter__"
     HTTP = "http"
@@ -29,7 +29,8 @@ func resolve(ctx *web.Context, short string) {
 
 // function to shorten and store a url
 func shorten(ctx *web.Context, data string){
-   if url, ok := ctx.Request.Params["url"]; ok{
+    const jsntmpl = "{\"url\" : \"%s\", \"longurl\" : \"%s\"}\n"
+    if url, ok := ctx.Request.Params["url"]; ok{
         if ! strings.HasPrefix(url, HTTP){
             url = fmt.Sprintf("%s://%s", HTTP, url)
         }
@@ -41,10 +42,10 @@ func shorten(ctx *web.Context, data string){
         location := fmt.Sprintf("%s://%s/%s", HTTP, request.Host, encoded)
         ctx.SetHeader("Location", location, true)
         ctx.StartResponse(201)
-        ctx.WriteString(fmt.Sprintf("{\"url\" : \"%s\"}\n", location))
-   }else{
+        ctx.WriteString(fmt.Sprintf(jsntmpl, location, url))
+    }else{
        ctx.Redirect(404, "/")
-   }
+    }
 }
 
 // encodes a number into our *base* representation
