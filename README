@@ -35,17 +35,18 @@ Once the dependecies are installed, check out kurz.go:
     $ make
     $ ./kurz #assumes that redis is up and running
 
-In order to shorten a url send it to http://localhost:9999/shorten/$url and in
-return you will get the shortened URL. If you open that URL, it will do the
-expected thing an redirect you to the original URL. 
+In order to shorten a url POST it to http://localhost:9999/shorten/ with the
+parameter url set to the long url. In return, you will get a json document
+containing the long and the short url. If you open the shortened URL, "kurz"
+will do the expected thing an redirect you to the original URL. 
 
 All urls are stored in redis and if you set it up so, that it actually persists
-file to disk, the state can be kept forever. Since there is no real state within
+data to disk, the state can be kept forever. Since there is no real state within
 kurz.go, you could run multiple instances of it, but I have not tried it yet.
 
 Testing it out
 --------------
-the stuff directory contains a shell-script that imports the csv file into
+The 'stuff' directory contains a shell-script that imports the csv file into
 kurz.go. Just try it out!
 
 Note: The csv file might contain some NSFW urls, I found it on the interwebs
@@ -53,3 +54,4 @@ somewhere. You have been warned.
 
 Have fun with it!
 
+-- @fs111
