@@ -9,7 +9,7 @@ import (
 
 const(
     // characters used for short-urls
-    SYMBOLS = "0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ"
+    SYMBOLS = "0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ()."
     // special key in redis, that is our global counter
     COUNTER = "__counter__"
     HTTP = "http"
@@ -28,15 +28,23 @@ func resolve(ctx *web.Context, short string) {
 }
 
 // function to shorten and store a url
-func store(ctx *web.Context, url string){
-    if ! strings.HasPrefix(url, HTTP){
-        url = fmt.Sprintf("%s://%s", HTTP, url)
-    }
-    ctr, _ := redis.Incr(COUNTER)
-    encoded := encode(ctr)
-    redis.Set(encoded, url)
-    request := ctx.Request
-    ctx.WriteString( fmt.Sprintf("%s://%s/%s\n", HTTP, request.Host, encoded))
+func shorten(ctx *web.Context, data string){
+   if url, ok := ctx.Request.Params["url"]; ok{
+        if ! strings.HasPrefix(url, HTTP){
+            url = fmt.Sprintf("%s://%s", HTTP, url)
+        }
+        ctr, _ := redis.Incr(COUNTER)
+        encoded := encode(ctr)
+        go redis.Set(encoded, url)
+        request := ctx.Request
+        ctx.SetHeader("Content-Type", "application/json", true)
+        location := fmt.Sprintf("%s://%s/%s", HTTP, request.Host, encoded)
+        ctx.SetHeader("Location", location, true)
+        ctx.StartResponse(201)
+        ctx.WriteString(fmt.Sprintf("{\"url\" : \"%s\"}\n", location))
+   }else{
+       ctx.Redirect(404, "/")
+   }
 }
 
 // encodes a number into our *base* representation
@@ -55,7 +63,7 @@ func encode(number int64) string{
 
 // main function that inits the routes in web.go
 func main() {
-    web.Get("/store/(.*)", store)
+    web.Post("/shorten/(.*)", shorten)
     web.Get("/(.*)", resolve)
     web.Run("0.0.0.0:9999")
 }

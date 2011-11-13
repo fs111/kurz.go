@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOW_MANY=100000
+HOW_MANY=1000
 
 for i in $(bzcat top-1m.csv.bz2 | head -n $HOW_MANY | awk -F, '{print $2}'); do curl \
-    http://localhost:9999/store/$i 2>&1 > /dev/null; done
+ -d"url=$1" http://localhost:9999/shorten/ ; done
