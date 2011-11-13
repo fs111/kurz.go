@@ -39,7 +39,11 @@ func shorten(ctx *web.Context, data string){
         go redis.Set(encoded, url)
         request := ctx.Request
         ctx.SetHeader("Content-Type", "application/json", true)
-        location := fmt.Sprintf("%s://%s/%s", HTTP, request.Host, encoded)
+        host := request.Host
+        if realhost, ok := ctx.Request.Params["X-Real-IP"]; ok{
+            host = realhost
+        }
+        location := fmt.Sprintf("%s://%s/%s", HTTP, host, encoded)
         ctx.SetHeader("Location", location, true)
         ctx.StartResponse(201)
         ctx.WriteString(fmt.Sprintf(jsntmpl, location, url))
