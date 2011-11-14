@@ -22,9 +22,12 @@ var (
 
 // function to resolve a shorturl and redirect
 func resolve(ctx *web.Context, short string) {
-    redirect, _ := redis.Get(short)
-    ctx.Redirect(302, redirect.String())
-    // TODO needs error handling here
+    redirect, err := redis.Get(short)
+    if err == nil {
+        ctx.Redirect(301, redirect.String())
+    } else {
+        ctx.Redirect(301, "https://www.youtube.com/watch?v=jRHmvy5eaG4")
+    }
 }
 
 // function to shorten and store a url
