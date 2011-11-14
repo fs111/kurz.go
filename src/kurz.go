@@ -19,20 +19,9 @@ const(
 // connecting to redis on localhost, db with id 0 and no password
 var (
     redis *godis.Client
+    config *Config
 )
 
-func bootstrap(cfg *Config) os.Error{
-    host := cfg.GetStringDefault("redis.address", "tcp:localhost:6379")
-    db := cfg.GetIntDefault("redis.database", 0)
-    passwd := cfg.GetStringDefault("redis.password", "")
-
-    println(host)
-    println(db)
-    println(passwd)
-
-    redis = godis.New(host, db, passwd)
-    return nil
-}
 
 
 // function to resolve a shorturl and redirect
@@ -47,20 +36,21 @@ func resolve(ctx *web.Context, short string) {
 
 // function to shorten and store a url
 func shorten(ctx *web.Context, data string){
-    const jsntmpl = "{\"url\" : \"%s\", \"longurl\" : \"%s\"}\n"
+    const(
+        jsntmpl = "{\"url\" : \"%s\", \"longurl\" : \"%s\"}\n"
+    )
+    host := config.GetStringDefault("hostname", "localhost")
+
     if url, ok := ctx.Request.Params["url"]; ok{
         if ! strings.HasPrefix(url, HTTP){
             url = fmt.Sprintf("%s://%s", HTTP, url)
         }
         ctr, _ := redis.Incr(COUNTER)
         encoded := encode(ctr)
+        // fire and forget
         go redis.Set(encoded, url)
-        request := ctx.Request
+
         ctx.SetHeader("Content-Type", "application/json", true)
-        host := request.Host
-        if realhost, ok := ctx.Request.Params["X-Real-IP"]; ok{
-            host = realhost
-        }
         location := fmt.Sprintf("%s://%s/%s", HTTP, host, encoded)
         ctx.SetHeader("Location", location, true)
         ctx.StartResponse(201)
@@ -84,17 +74,30 @@ func encode(number int64) string{
     return result
 }
 
+
+func bootstrap(path string) os.Error {
+    config = NewConfig(path)
+    config.Parse()
+    host := config.GetStringDefault("redis.address", "tcp:localhost:6379")
+    db := config.GetIntDefault("redis.database", 0)
+    passwd := config.GetStringDefault("redis.password", "")
+
+    redis = godis.New(host, db, passwd)
+    return nil
+}
+
+
+
+
 // main function that inits the routes in web.go
 func main() {
-    cfg := NewConfig("conf/kurz.conf")
-    cfg.Parse()
-    err := bootstrap(cfg)
+    err := bootstrap("conf/kurz.conf")
     if err == nil {
         // this could go to bootstrap as well
         web.Post("/shorten/(.*)", shorten)
         web.Get("/(.*)", resolve)
-        listen := cfg.GetStringDefault("listen", "0.0.0.0")
-        port := cfg.GetStringDefault("port", "9999")
+        listen := config.GetStringDefault("listen", "0.0.0.0")
+        port := config.GetStringDefault("port", "9999")
         web.Run(fmt.Sprintf("%s:%s", listen, port))
     }
 }
