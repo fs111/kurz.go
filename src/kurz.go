@@ -5,6 +5,7 @@ import (
     "strings"
     "godis"
     "fmt"
+    "os"
 )
 
 const(
@@ -17,8 +18,22 @@ const(
 
 // connecting to redis on localhost, db with id 0 and no password
 var (
-    redis = godis.New("", 0, "")
+    redis *godis.Client
 )
+
+func bootstrap(cfg *Config) os.Error{
+    host := cfg.GetStringDefault("redis.address", "tcp:localhost:6379")
+    db := cfg.GetIntDefault("redis.database", 0)
+    passwd := cfg.GetStringDefault("redis.password", "")
+
+    println(host)
+    println(db)
+    println(passwd)
+
+    redis = godis.New(host, db, passwd)
+    return nil
+}
+
 
 // function to resolve a shorturl and redirect
 func resolve(ctx *web.Context, short string) {
@@ -71,8 +86,16 @@ func encode(number int64) string{
 
 // main function that inits the routes in web.go
 func main() {
-    web.Post("/shorten/(.*)", shorten)
-    web.Get("/(.*)", resolve)
-    web.Run("0.0.0.0:9999")
+    cfg := NewConfig("conf/kurz.conf")
+    cfg.Parse()
+    err := bootstrap(cfg)
+    if err == nil {
+        // this could go to bootstrap as well
+        web.Post("/shorten/(.*)", shorten)
+        web.Get("/(.*)", resolve)
+        listen := cfg.GetStringDefault("listen", "0.0.0.0")
+        port := cfg.GetStringDefault("port", "9999")
+        web.Run(fmt.Sprintf("%s:%s", listen, port)
+    }
 }
 
