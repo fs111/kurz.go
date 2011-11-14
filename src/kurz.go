@@ -95,7 +95,7 @@ func main() {
         web.Get("/(.*)", resolve)
         listen := cfg.GetStringDefault("listen", "0.0.0.0")
         port := cfg.GetStringDefault("port", "9999")
-        web.Run(fmt.Sprintf("%s:%s", listen, port)
+        web.Run(fmt.Sprintf("%s:%s", listen, port))
     }
 }
 
