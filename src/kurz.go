@@ -7,6 +7,7 @@ import (
     "fmt"
     "os"
     "url"
+    "flag"
 )
 
 const(
@@ -87,7 +88,9 @@ func bootstrap(path string) os.Error {
 
 // main function that inits the routes in web.go
 func main() {
-    err := bootstrap("conf/kurz.conf")
+    flag.Parse()
+    cfgFile := flag.Arg(0)
+    err := bootstrap(cfgFile)
     if err == nil {
         // this could go to bootstrap as well
         web.Post("/shorten/(.*)", shorten)
