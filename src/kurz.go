@@ -10,13 +10,9 @@ import (
 )
 
 const(
-    // characters used for short-urls
-    SYMBOLS = "0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ"
     // special key in redis, that is our global counter
     COUNTER = "__counter__"
     HTTP = "http"
-    HTTPS = "https"
-
 )
 
 // connecting to redis on localhost, db with id 0 and no password
@@ -61,7 +57,7 @@ func shorten(ctx *web.Context, data string){
     theUrl, err := isValidUrl(string(r))
     if err == nil{
         ctr, _ := redis.Incr(COUNTER)
-        encoded := encode(ctr)
+        encoded := Encode(ctr)
         // fire and forget
         go redis.Set(encoded, theUrl.Raw)
 
@@ -74,21 +70,6 @@ func shorten(ctx *web.Context, data string){
        ctx.Redirect(404, "/")
     }
 }
-
-// encodes a number into our *base* representation
-// TODO can this be made better with some bitshifting?
-func encode(number int64) string{
-    const base = int64(len(SYMBOLS))
-    rest := number % base
-    // strings are a bit weird in go...
-    result := string(SYMBOLS[rest])
-    if number - rest != 0{
-       newnumber := (number - rest ) / base
-       result = encode(newnumber) + result
-    }
-    return result
-}
-
 
 func bootstrap(path string) os.Error {
     config = NewConfig(path)
