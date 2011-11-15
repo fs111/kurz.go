@@ -4,9 +4,8 @@ kurz.go - a url shortener in go
 kurz.go is my attempt to write a program that is actually useful in go. Right
 now it is in alpha stage, but will eventually grow into a the real thing.
 
-Right now it can shorten URLs and redirect. All urls are stored in a redis
-(http://redis.io) instance, that is assumed to be running on the same host on
-the default port.
+Right now it can shorten URLs, redirect and list the latest stored URLs. All
+urls are stored in a redis (http://redis.io) instance.
 
 
 Compiling kurz.go
@@ -20,7 +19,7 @@ For installing web.go do:
 
     $ git clone https://github.com/hoisie/web.go.git
     $ cd web.go
-    $ make install (should work agains the latest weekly release)
+    $ make install (should work against the latest weekly release)
 
 for isntalling godis do:
     $ git clone https://github.com/simonz05/godis.git
@@ -33,15 +32,28 @@ writable.
 Once the dependecies are installed, check out kurz.go:
     $ git https://github.com/fs111/kurz.go
     $ make
-    $ ./kurz #assumes that redis is up and running
+    $ ./kurz conf/kurz.conf #assumes that redis is up and running
 
 In order to shorten a url POST it to http://localhost:9999/shorten/ with the
 parameter url set to the long url. In return, you will get a json document
 containing the long and the short url. If you open the shortened URL, "kurz"
-will do the expected thing an redirect you to the original URL. 
+will do the expected thing an redirect you to the original URL. All
+functionality is shown below:
 
-All urls are stored in redis and if you set it up so, that it actually persists
-data to disk, the state can be kept forever. Since there is no real state within
+# store a URL
+$ curl http://localhost:9999/shorten/ -d"url=https://github.com/fs111/kurz.go"
+{"url" : "http://localhost:9999/2LO", "longurl" : "https://github.com/fs111/kurz.go"}
+
+# open a URL
+$ curl http://localhost:9999/2LN
+Redirecting to: http://github.com/fs111/kurz.go
+
+# list latest URLs
+$ curl  http://localhost:9999/latest/1
+https://github.com/fs111/kurz.go
+
+All urls are stored in redis and if you set it up so, that it persists data to
+disk, the state can be kept forever. Since there is no real state within
 kurz.go, you could run multiple instances of it, but I have not tried it yet.
 
 Testing it out

@@ -1,3 +1,5 @@
-* update README
 * write howto for nginx
 * user interface?
+* introduc /api/?
+* allways json in return?
+* keep usage stats
