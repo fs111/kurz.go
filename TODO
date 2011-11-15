@@ -1,5 +1,3 @@
 * update README
 * write howto for nginx
 * user interface?
-* move encode to own file and add decode method
-* check for presence of https, not only http
