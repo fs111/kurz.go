@@ -1,4 +1,5 @@
 * update README
 * write howto for nginx
 * user interface?
-* move ecode to own file and add decode method
+* move encode to own file and add decode method
+* check for presence of https, not only http
