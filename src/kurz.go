@@ -6,6 +6,7 @@ import (
     "godis"
     "fmt"
     "os"
+    "url"
 )
 
 const(
@@ -14,6 +15,8 @@ const(
     // special key in redis, that is our global counter
     COUNTER = "__counter__"
     HTTP = "http"
+    HTTPS = "https"
+
 )
 
 // connecting to redis on localhost, db with id 0 and no password
@@ -34,27 +37,39 @@ func resolve(ctx *web.Context, short string) {
     }
 }
 
+
+
+func isValidUrl(rawurl string) (u *url.URL, err os.Error){
+    if len(rawurl) == 0{
+        return nil, os.NewError("empty url")
+    }
+    // XXX this needs some love...
+    if !strings.HasPrefix(rawurl, HTTP){
+        rawurl = fmt.Sprintf("%s://%s", HTTP, rawurl)
+    }
+    return url.Parse(rawurl)
+}
+
+
 // function to shorten and store a url
 func shorten(ctx *web.Context, data string){
     const(
         jsntmpl = "{\"url\" : \"%s\", \"longurl\" : \"%s\"}\n"
     )
     host := config.GetStringDefault("hostname", "localhost")
-
-    if url, ok := ctx.Request.Params["url"]; ok{
-        if ! strings.HasPrefix(url, HTTP){
-            url = fmt.Sprintf("%s://%s", HTTP, url)
-        }
+    r, _ := ctx.Request.Params["url"]
+    theUrl, err := isValidUrl(string(r))
+    if err == nil{
         ctr, _ := redis.Incr(COUNTER)
         encoded := encode(ctr)
         // fire and forget
-        go redis.Set(encoded, url)
+        go redis.Set(encoded, theUrl.Raw)
 
         ctx.SetHeader("Content-Type", "application/json", true)
         location := fmt.Sprintf("%s://%s/%s", HTTP, host, encoded)
         ctx.SetHeader("Location", location, true)
         ctx.StartResponse(201)
-        ctx.WriteString(fmt.Sprintf(jsntmpl, location, url))
+        ctx.WriteString(fmt.Sprintf(jsntmpl, location, theUrl.Raw))
     }else{
        ctx.Redirect(404, "/")
     }
