@@ -8,6 +8,7 @@ import (
     "os"
     "url"
     "flag"
+    "strconv"
 )
 
 const(
@@ -72,6 +73,21 @@ func shorten(ctx *web.Context, data string){
     }
 }
 
+
+func latest(ctx *web.Context, data string){
+    howmany, err := strconv.Atoi64(data)
+    if err != nil {
+        howmany = 10
+    }
+    c, _ := redis.Get(COUNTER)
+    last := c.Int64()
+    for i := last; i > (last - howmany) && i > 0; i -= 1{
+        res, _:= redis.Get(Encode(i))
+        ctx.WriteString(res.String() + "\n")
+    }
+}
+
+
 func bootstrap(path string) os.Error {
     config = NewConfig(path)
     config.Parse()
@@ -84,8 +100,6 @@ func bootstrap(path string) os.Error {
 }
 
 
-
-
 // main function that inits the routes in web.go
 func main() {
     flag.Parse()
@@ -94,6 +108,7 @@ func main() {
     if err == nil {
         // this could go to bootstrap as well
         web.Post("/shorten/(.*)", shorten)
+        web.Get("/latest/(.*)", latest)
         web.Get("/(.*)", resolve)
         listen := config.GetStringDefault("listen", "0.0.0.0")
         port := config.GetStringDefault("port", "9999")
