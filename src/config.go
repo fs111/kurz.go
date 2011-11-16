@@ -61,7 +61,7 @@ func (c Config) GetStringDefault(key string, val string) string{
     if e == nil{
         return entry
     }
-    return entry
+    return val
 }
 
 
