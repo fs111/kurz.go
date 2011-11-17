@@ -42,7 +42,7 @@ func (k KurzUrl) Json()[]byte{
 
 // Creates a new KurzUrl instance. The Given key, shorturl and longurl will
 // be used. Clicks will be set to 0 and CreationDate to time.Nanoseconds()
-func NewKurzUrl(key string, shorturl string, longurl string) *KurzUrl{
+func NewKurzUrl(key, shorturl, longurl string) *KurzUrl{
     kurl := new(KurzUrl)
     kurl.CreationDate = time.Nanoseconds()
     kurl.Key = key
@@ -53,8 +53,23 @@ func NewKurzUrl(key string, shorturl string, longurl string) *KurzUrl{
 }
 
 
+
+func info(ctx *web.Context, short string) {
+    kurl, err :=  load(short)
+    if err == nil{
+        ctx.SetHeader("Content-Type", "application/json", true)
+        ctx.Write(kurl.Json())
+        ctx.WriteString("\n")
+    } else{
+        ctx.Redirect(404, "/")
+    }
+}
 // function to resolve a shorturl and redirect
 func resolve(ctx *web.Context, short string) {
+    if strings.HasSuffix(short, "+"){
+        info(ctx, strings.Replace(short, "+", "", 1))
+        return
+    }
     redirect, err := redis.Hget(short, "LongUrl")
     if err == nil {
         go redis.Hincrby(short, "Clicks", 1)
@@ -79,7 +94,7 @@ func isValidUrl(rawurl string) (u *url.URL, err os.Error){
 
 // stores a new KurzUrl for the given key, shorturl and longurl. Existing
 // ones with the same url will be overwritten
-func store(key string, shorturl string, longurl string)*KurzUrl{
+func store(key, shorturl, longurl string)*KurzUrl{
     kurl := NewKurzUrl(key, shorturl, longurl)
     go redis.Hset(kurl.Key, "LongUrl", kurl.LongUrl)
     go redis.Hset(kurl.Key, "ShortUrl", kurl.ShortUrl)
@@ -173,6 +188,7 @@ func main() {
         // this could go to bootstrap as well
         web.Post("/shorten/(.*)", shorten)
         web.Get("/latest/(.*)", latest)
+        web.Get("/info/(.*)", info)
         web.Get("/(.*)", resolve)
         listen := config.GetStringDefault("listen", "0.0.0.0")
         port := config.GetStringDefault("port", "9999")
