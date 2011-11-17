@@ -54,6 +54,11 @@ $ curl http://localhost:9999/shorten/ -d"url=https://github.com/fs111/kurz.go"
 $ curl http://localhost:9999/eIi
 Redirecting to: http://github.com/fs111/kurz.go
 
+# show information about a url
+$ curl http://localhost:9999/eIi+ # notice the bit.ly style + in the end
+{"Key":"eIi","ShortUrl":"http://localhost:9999/eIi","LongUrl":"http://github.com/fs111/kurz.go","CreationDate":1321486517214982000,"Clicks":1}
+
+
 # list latest URLs
 $ curl  http://localhost:9999/latest/1
 { "urls" : [{"Key":"eIi","ShortUrl":"http://localhost:9999/eIi","LongUrl":"http://github.com/fs111/kurz.go","CreationDate":1321486517214982000,"Clicks":0}] }
