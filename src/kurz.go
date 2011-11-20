@@ -11,12 +11,14 @@ import (
     "strconv"
     "time"
     "json"
+    "http"
 )
 
 const(
     // special key in redis, that is our global counter
     COUNTER = "__counter__"
     HTTP = "http"
+    ROLL = "https://www.youtube.com/watch?v=jRHmvy5eaG4" 
 )
 
 
@@ -61,7 +63,7 @@ func info(ctx *web.Context, short string) {
         ctx.Write(kurl.Json())
         ctx.WriteString("\n")
     } else{
-        ctx.Redirect(404, "/")
+        ctx.Redirect(http.StatusNotFound, "/")
     }
 }
 // function to resolve a shorturl and redirect
@@ -73,9 +75,11 @@ func resolve(ctx *web.Context, short string) {
     redirect, err := redis.Hget(short, "LongUrl")
     if err == nil {
         go redis.Hincrby(short, "Clicks", 1)
-        ctx.Redirect(301, redirect.String())
+        ctx.Redirect(http.StatusMovedPermanently,
+             redirect.String())
     } else {
-        ctx.Redirect(301, "https://www.youtube.com/watch?v=jRHmvy5eaG4")
+        ctx.Redirect(http.StatusMovedPermanently,
+            ROLL)
     }
 }
 
@@ -133,11 +137,11 @@ func shorten(ctx *web.Context, data string){
 
         ctx.SetHeader("Content-Type", "application/json", true)
         ctx.SetHeader("Location", location, true)
-        ctx.StartResponse(201)
+        ctx.StartResponse(http.StatusCreated)
         ctx.Write(kurl.Json())
         ctx.WriteString("\n")
     }else{
-       ctx.Redirect(404, "/")
+       ctx.Redirect(http.StatusNotFound, "/")
     }
 }
 
@@ -148,6 +152,7 @@ func latest(ctx *web.Context, data string){
         howmany = 10
     }
     c, _ := redis.Get(COUNTER)
+
     last := c.Int64()
     upTo := (last - howmany)
 
@@ -167,30 +172,39 @@ func latest(ctx *web.Context, data string){
 }
 
 
+func robots(ctx *web.Context){
+
+    ctx.SetHeader("Content-Type", "text/plain", true)
+    ctx.WriteString("Disallow:\n")
+}
+
 func bootstrap(path string) os.Error {
     config = NewConfig(path)
     config.Parse()
+
     host := config.GetStringDefault("redis.address", "tcp:localhost:6379")
     db := config.GetIntDefault("redis.database", 0)
     passwd := config.GetStringDefault("redis.password", "")
 
     redis = godis.New(host, db, passwd)
+
+    web.Post("/shorten/(.*)", shorten)
+    web.Get("/latest/(.*)", latest)
+    web.Get("/info/(.*)", info)
+    web.Get("/robots.txt", robots)
+    web.Get("/(.*)", resolve)
+
     return nil
 }
 
 
-// main function that inits the routes in web.go
+// main function that starts everything
 func main() {
     flag.Parse()
     cfgFile := flag.Arg(0)
     err := bootstrap(cfgFile)
     if err == nil {
-        // this could go to bootstrap as well
-        web.Post("/shorten/(.*)", shorten)
-        web.Get("/latest/(.*)", latest)
-        web.Get("/info/(.*)", info)
-        web.Get("/(.*)", resolve)
-        listen := config.GetStringDefault("listen", "0.0.0.0")
+                listen := config.GetStringDefault("listen", "0.0.0.0")
         port := config.GetStringDefault("port", "9999")
         web.Run(fmt.Sprintf("%s:%s", listen, port))
     }
