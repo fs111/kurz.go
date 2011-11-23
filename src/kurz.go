@@ -63,7 +63,7 @@ func info(ctx *web.Context, short string) {
         ctx.Write(kurl.Json())
         ctx.WriteString("\n")
     } else{
-        ctx.Redirect(http.StatusNotFound, "/")
+        ctx.Redirect(http.StatusNotFound, ROLL)
     }
 }
 // function to resolve a shorturl and redirect
@@ -141,7 +141,7 @@ func shorten(ctx *web.Context, data string){
         ctx.Write(kurl.Json())
         ctx.WriteString("\n")
     }else{
-       ctx.Redirect(http.StatusNotFound, "/")
+       ctx.Redirect(http.StatusNotFound, ROLL)
     }
 }
 
@@ -178,6 +178,7 @@ func robots(ctx *web.Context){
     ctx.WriteString("Disallow:\n")
 }
 
+// bootstraps the server
 func bootstrap(path string) os.Error {
     config = NewConfig(path)
     config.Parse()
