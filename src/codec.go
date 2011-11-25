@@ -8,6 +8,7 @@ import(
 const(
     // characters used for short-urls
     SYMBOLS = "0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ"
+
     // someone set us up the bomb !! 
     BASE = int64(len(SYMBOLS))
 )
@@ -19,7 +20,7 @@ func Encode(number int64) string{
     rest := number % BASE
     // strings are a bit weird in go...
     result := string(SYMBOLS[rest])
-    if number - rest != 0{
+    if number - rest != 0 {
        newnumber := (number - rest ) / BASE
        result = Encode(newnumber) + result
     }

@@ -189,6 +189,8 @@ func bootstrap(path string) os.Error {
 
     redis = godis.New(host, db, passwd)
 
+    web.Config.StaticDir = config.GetStringDefault("static-directory", "")
+
     web.Post("/shorten/(.*)", shorten)
     web.Get("/latest/(.*)", latest)
     web.Get("/info/(.*)", info)
