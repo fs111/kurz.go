@@ -23,5 +23,5 @@ bin-dist: $(TARG)
 	@mkdir -p $(MYTARGDIR)/$(STATIC_DIR)
 	@cp -rf conf/kurz.conf $(MYTARGDIR)/etc/kurz/
 	@sed 's?=static?=$(STATIC_DIR)?' conf/$(CONF_NAME) > $(MYTARGDIR)/etc/kurz/$(CONF_NAME)
-	@cp stuff/favicon.ico $(MYTARGDIR)/$(STATIC_DIR)
+	@cp stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
 	@cp $(TARG) $(MYTARGDIR)/bin

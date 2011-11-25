@@ -172,12 +172,6 @@ func latest(ctx *web.Context, data string){
 }
 
 
-func robots(ctx *web.Context){
-
-    ctx.SetHeader("Content-Type", "text/plain", true)
-    ctx.WriteString("Disallow:\n")
-}
-
 // bootstraps the server
 func bootstrap(path string) os.Error {
     config = NewConfig(path)
@@ -194,7 +188,6 @@ func bootstrap(path string) os.Error {
     web.Post("/shorten/(.*)", shorten)
     web.Get("/latest/(.*)", latest)
     web.Get("/info/(.*)", info)
-    web.Get("/robots.txt", robots)
     web.Get("/(.*)", resolve)
 
     return nil
