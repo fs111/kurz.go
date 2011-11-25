@@ -15,7 +15,8 @@ CLEANFILES=$(MYTARGDIR)
 GOFILES=\
 	src/*.go\
 
-include $(GOROOT)/src/Make.cmd
+all: bin-dist
+
 
 bin-dist: $(TARG)
 	@mkdir -p $(MYTARGDIR)/etc/kurz/
@@ -25,3 +26,5 @@ bin-dist: $(TARG)
 	@sed 's?=static?=$(STATIC_DIR)?' conf/$(CONF_NAME) > $(MYTARGDIR)/etc/kurz/$(CONF_NAME)
 	@cp stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
 	@cp $(TARG) $(MYTARGDIR)/bin
+
+include $(GOROOT)/src/Make.cmd
