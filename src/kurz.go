@@ -55,8 +55,11 @@ func NewKurzUrl(key, shorturl, longurl string) *KurzUrl{
 }
 
 
-
 func info(ctx *web.Context, short string) {
+    if strings.HasSuffix(short, "+"){
+        short = strings.Replace(short, "+", "", 1)
+    }
+
     kurl, err :=  load(short)
     if err == nil{
         ctx.SetHeader("Content-Type", "application/json", true)
@@ -68,11 +71,7 @@ func info(ctx *web.Context, short string) {
 }
 // function to resolve a shorturl and redirect
 func resolve(ctx *web.Context, short string) {
-    if strings.HasSuffix(short, "+"){
-        info(ctx, strings.Replace(short, "+", "", 1))
-        return
-    }
-    redirect, err := redis.Hget(short, "LongUrl")
+        redirect, err := redis.Hget(short, "LongUrl")
     if err == nil {
         go redis.Hincrby(short, "Clicks", 1)
         ctx.Redirect(http.StatusMovedPermanently,
@@ -186,9 +185,11 @@ func bootstrap(path string) os.Error {
     web.Config.StaticDir = config.GetStringDefault("static-directory", "")
 
     web.Post("/shorten/(.*)", shorten)
-    web.Get("/latest/(.*)", latest)
-    web.Get("/info/(.*)", info)
-    web.Get("/(.*)", resolve)
+
+    web.Get("/([a-zA-Z0-9]*)", resolve)
+    web.Get("/([a-zA-Z0-9]*)\\+", info)
+    web.Get("/latest/([0-9]*)", latest)
+    web.Get("/info/([a-zA-Z0-9]*)", info)
 
     return nil
 }
