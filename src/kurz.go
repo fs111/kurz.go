@@ -18,7 +18,7 @@ const(
     // special key in redis, that is our global counter
     COUNTER = "__counter__"
     HTTP = "http"
-    ROLL = "https://www.youtube.com/watch?v=jRHmvy5eaG4" 
+    ROLL = "https://www.youtube.com/watch?v=jRHmvy5eaG4"
 )
 
 
@@ -56,10 +56,10 @@ func NewKurzUrl(key, shorturl, longurl string) *KurzUrl{
 
 
 func info(ctx *web.Context, short string) {
+
     if strings.HasSuffix(short, "+"){
         short = strings.Replace(short, "+", "", 1)
     }
-
     kurl, err :=  load(short)
     if err == nil{
         ctx.SetHeader("Content-Type", "application/json", true)
@@ -81,6 +81,14 @@ func resolve(ctx *web.Context, short string) {
             ROLL)
     }
 }
+
+
+
+func index(ctx *web.Context){
+    redirect := config.GetStringDefault("index", ROLL)
+    ctx.Redirect(http.StatusMovedPermanently, redirect)
+}
+
 
 
 // Determines if the string rawurl is a valid URL to be stored.
@@ -186,6 +194,7 @@ func bootstrap(path string) os.Error {
 
     web.Post("/shorten/(.*)", shorten)
 
+    web.Get("/", index)
     web.Get("/([a-zA-Z0-9]*)", resolve)
     web.Get("/([a-zA-Z0-9]*)\\+", info)
     web.Get("/latest/([0-9]*)", latest)
@@ -201,7 +210,7 @@ func main() {
     cfgFile := flag.Arg(0)
     err := bootstrap(cfgFile)
     if err == nil {
-                listen := config.GetStringDefault("listen", "0.0.0.0")
+        listen := config.GetStringDefault("listen", "0.0.0.0")
         port := config.GetStringDefault("port", "9999")
         web.Run(fmt.Sprintf("%s:%s", listen, port))
     }
