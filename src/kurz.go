@@ -54,7 +54,7 @@ func NewKurzUrl(key, shorturl, longurl string) *KurzUrl{
     return kurl
 }
 
-
+// function to display the info about a KurzUrl given by it's Key
 func info(ctx *web.Context, short string) {
 
     if strings.HasSuffix(short, "+"){
@@ -69,19 +69,19 @@ func info(ctx *web.Context, short string) {
         ctx.Redirect(http.StatusNotFound, ROLL)
     }
 }
+
 // function to resolve a shorturl and redirect
 func resolve(ctx *web.Context, short string) {
-        redirect, err := redis.Hget(short, "LongUrl")
+    kurl, err :=  load(short)
     if err == nil {
-        go redis.Hincrby(short, "Clicks", 1)
+        go redis.Hincrby(kurl.Key, "Clicks", 1)
         ctx.Redirect(http.StatusMovedPermanently,
-             redirect.String())
+             kurl.LongUrl)
     } else {
         ctx.Redirect(http.StatusMovedPermanently,
             ROLL)
     }
 }
-
 
 
 func index(ctx *web.Context){
