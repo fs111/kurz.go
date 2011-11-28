@@ -35,9 +35,11 @@ func (c Config) Parse() os.Error{
     }
     for _, line := range strings.Split(string(contents), "\n"){
         line = strings.TrimSpace(line)
-        if int64(len(line)) > 2 && !strings.HasPrefix(line, COMMENT){
+        if len(line) > 2 && !strings.HasPrefix(line, COMMENT){
             row := strings.SplitN(line, SEPARATOR, 2)
-            c.Entries[string(row[0])] = string(row[1])
+            key, value := strings.TrimSpace(string(row[0])),
+                          strings.TrimSpace(string(row[1]))
+            c.Entries[key] = value
         }
     }
     return nil
