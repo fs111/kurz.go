@@ -193,6 +193,8 @@ func bootstrap(path string) os.Error {
     web.Config.StaticDir = config.GetStringDefault("static-directory", "")
 
     web.Post("/shorten/(.*)", shorten)
+    // support for Get makes it easier to implement a bookmarklet
+    web.Get("/shorten/(.*)", shorten)
 
     web.Get("/", index)
     web.Get("/([a-zA-Z0-9]*)", resolve)
