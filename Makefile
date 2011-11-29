@@ -26,5 +26,7 @@ bin-dist: $(TARG)
 	@sed 's?=static?=$(STATIC_DIR)?' conf/$(CONF_NAME) > $(MYTARGDIR)/etc/kurz/$(CONF_NAME)
 	@cp stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
 	@cp $(TARG) $(MYTARGDIR)/bin
+	@git log --pretty=format:"kurz.go %H" -1 > $(MYTARGDIR)/$(STATIC_DIR)/_version
+
 
 include $(GOROOT)/src/Make.cmd
