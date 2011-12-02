@@ -37,7 +37,7 @@ type KurzUrl struct{
 }
 
 // Converts the KurzUrl to JSON.
-func (k KurzUrl) Json()[]byte{
+func (k KurzUrl) Json() [] byte{
     b, _ := json.Marshal(k)
     return b
 }
@@ -53,6 +53,35 @@ func NewKurzUrl(key, shorturl, longurl string) *KurzUrl{
     kurl.Clicks = 0
     return kurl
 }
+
+
+// stores a new KurzUrl for the given key, shorturl and longurl. Existing
+// ones with the same url will be overwritten
+func store(key, shorturl, longurl string) *KurzUrl{
+    kurl := NewKurzUrl(key, shorturl, longurl)
+    go redis.Hset(kurl.Key, "LongUrl", kurl.LongUrl)
+    go redis.Hset(kurl.Key, "ShortUrl", kurl.ShortUrl)
+    go redis.Hset(kurl.Key, "CreationDate", kurl.CreationDate)
+    go redis.Hset(kurl.Key, "Clicks", kurl.Clicks)
+    return kurl
+}
+
+// loads a KurzUrl instance for the given key. If the key is
+// not found, os.Error is returned.
+func load(key string) (*KurzUrl, os.Error){
+    if ok, _ := redis.Hexists(key, "ShortUrl"); ok{
+        kurl := new(KurzUrl)
+        kurl.Key = key
+        reply, _ := redis.Hmget(key, "LongUrl", "ShortUrl", "CreationDate", "Clicks")
+        kurl.LongUrl, kurl.ShortUrl, kurl.CreationDate, kurl.Clicks =
+            reply.Elems[0].Elem.String(), reply.Elems[1].Elem.String(),
+            reply.Elems[2].Elem.Int64(), reply.Elems[3].Elem.Int64()
+        return kurl, nil
+    }
+    return nil, os.NewError("unknown key: " + key )
+}
+
+
 
 // function to display the info about a KurzUrl given by it's Key
 func info(ctx *web.Context, short string) {
@@ -90,7 +119,6 @@ func index(ctx *web.Context){
 }
 
 
-
 // Determines if the string rawurl is a valid URL to be stored.
 func isValidUrl(rawurl string) (u *url.URL, err os.Error){
     if len(rawurl) == 0{
@@ -103,31 +131,6 @@ func isValidUrl(rawurl string) (u *url.URL, err os.Error){
     return url.Parse(rawurl)
 }
 
-// stores a new KurzUrl for the given key, shorturl and longurl. Existing
-// ones with the same url will be overwritten
-func store(key, shorturl, longurl string)*KurzUrl{
-    kurl := NewKurzUrl(key, shorturl, longurl)
-    go redis.Hset(kurl.Key, "LongUrl", kurl.LongUrl)
-    go redis.Hset(kurl.Key, "ShortUrl", kurl.ShortUrl)
-    go redis.Hset(kurl.Key, "CreationDate", kurl.CreationDate)
-    go redis.Hset(kurl.Key, "Clicks", kurl.Clicks)
-    return kurl
-}
-
-// loads a KurzUrl instance for the given key. If the key is
-// not found, os.Error is returned.
-func load(key string) (kurl *KurzUrl, err os.Error){
-    if ok, _ := redis.Hexists(key, "ShortUrl"); ok{
-        kurl := new(KurzUrl)
-        kurl.Key = key
-        reply, _ := redis.Hmget(key, "LongUrl", "ShortUrl", "CreationDate", "Clicks")
-        kurl.LongUrl, kurl.ShortUrl, kurl.CreationDate, kurl.Clicks =
-            reply.Elems[0].Elem.String(), reply.Elems[1].Elem.String(),
-            reply.Elems[2].Elem.Int64(), reply.Elems[3].Elem.Int64()
-        return kurl, nil
-    }
-    return nil, os.NewError("unknown key: " + key )
-}
 
 
 // function to shorten and store a url
@@ -139,14 +142,9 @@ func shorten(ctx *web.Context, data string){
         ctr, _ := redis.Incr(COUNTER)
         encoded := Encode(ctr)
         location := fmt.Sprintf("%s://%s/%s", HTTP, host, encoded)
-
-        kurl := store(encoded, location, theUrl.Raw)
-
-        ctx.SetHeader("Content-Type", "application/json", true)
-        ctx.SetHeader("Location", location, true)
-        ctx.StartResponse(http.StatusCreated)
-        ctx.Write(kurl.Json())
-        ctx.WriteString("\n")
+        store(encoded, location, theUrl.Raw)
+        // redirect to the info page
+       ctx.Redirect(http.StatusMovedPermanently, location + "+")
     }else{
        ctx.Redirect(http.StatusNotFound, ROLL)
     }
