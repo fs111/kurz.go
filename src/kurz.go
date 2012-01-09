@@ -152,6 +152,10 @@ func shorten(ctx *web.Context, data string){
     }
 }
 
+
+//Returns a json array with information about the last shortened urls. If data 
+// is a valid integer, that's the amount of data it will return, otherwise
+// a maximum of 10 entries will be returned.
 func latest(ctx *web.Context, data string){
     howmany, err := strconv.Atoi64(data)
     if err != nil {
