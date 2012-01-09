@@ -27,6 +27,8 @@ func Encode(number int64) string{
     return result
 }
 
+// Decodes a string given in our encoding and returns the decimal 
+// integer.
 func Decode(input string) int64{
     const floatbase = float64(BASE)
     l := len(input)
