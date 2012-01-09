@@ -37,7 +37,7 @@ type KurzUrl struct{
 }
 
 // Converts the KurzUrl to JSON.
-func (k KurzUrl) Json() [] byte{
+func (k KurzUrl) Json() []byte{
     b, _ := json.Marshal(k)
     return b
 }
@@ -112,7 +112,9 @@ func resolve(ctx *web.Context, short string) {
     }
 }
 
-
+// serves the index page aka "/", which is a redirect to 
+// whatever has been configured externally or a very
+// special music video
 func index(ctx *web.Context){
     redirect := config.GetStringDefault("index", ROLL)
     ctx.Redirect(http.StatusMovedPermanently, redirect)
@@ -149,7 +151,6 @@ func shorten(ctx *web.Context, data string){
        ctx.Redirect(http.StatusNotFound, ROLL)
     }
 }
-
 
 func latest(ctx *web.Context, data string){
     howmany, err := strconv.Atoi64(data)
