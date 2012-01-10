@@ -1,0 +1,30 @@
+body {
+    background-color:#6C7B80;
+	text-align:left;
+    font-family: 'Oswald',sans-serif;
+    font-size: 16pt;
+}
+
+table {
+    border-width: 1px;
+    border-spacing: 2px;
+    border-style: outset;
+    border-color: gray;
+    border-collapse: collapse;
+    background-color: white;
+}
+table th {
+    border-width: 1px;
+    padding: 3px;
+    border-style: solid;
+    border-color: black;
+    background-color: white;
+    -moz-border-radius: ;
+}
+table td {
+    border-width: 1px;
+    padding: 3px;
+    border-style: solid;
+    border-color: black;
+    background-color: white;
+}

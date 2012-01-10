@@ -30,6 +30,6 @@ bin-dist: $(TARG) assets
 
 
 assets:
-	cp -r stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
+	@cp -r stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
 
 include $(GOROOT)/src/Make.cmd

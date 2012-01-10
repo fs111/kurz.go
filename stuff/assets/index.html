@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>kurz.go</title>
+        <link rel="stylesheet" type="text/css" href="css/style.css"> 
+        <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+        <script type="text/javascript"
+            src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
+        </script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var monthNames = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+        $.getJSON("/latest/50", function( obj ) { 
+            var allUrls = obj["urls"];
+            for (var i = 0; i < allUrls.length; i++) {
+                var url = allUrls[i];
+                
+                var d = new Date(url["CreationDate"] / 1000000);
+                $("table").append( 
+                    "<tr>" 
+                   + "<td>" + url["ShortUrl"] + "</td>"
+                   + "<td>" + url["LongUrl"] + "</td>"
+                   + "<td>" + d.getDate() + " " + monthNames[d.getMonth()] + " "
+                   + d.getFullYear() + "</td>"
+                   + "<td>" + url["Clicks"] + "</td>"
+                   + "</tr>");
+            } 
+        });
+        </script>
+        
+        <div>
+            <table border="1">
+                <colgroup>
+                    <col width="80">
+                    <col width="200">
+                    <col width="80">
+                    <col width="50">
+                </colgroup>
+                <tr>
+                    <th>ShortUrl</th>
+                    <th>LongUrl</th>
+                    <th>CreationDate</th>
+                    <th>Clicks</th>
+                    <tr>
+                    </table>
+                </div>
+            </body>
+        </html>
