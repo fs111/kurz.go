@@ -3,7 +3,16 @@ body {
 	text-align:left;
     font-family: 'Oswald',sans-serif;
     font-size: 16pt;
+    color:#000;
 }
+a {
+    color:#000;
+}
+a:link {text-decoration:none;}
+a:visited {text-decoration:none;}
+a:hover {text-decoration:none;}
+a:active {text-decoration:none;}
+img {  border-style: none; }
 
 table {
     border-width: 1px;
@@ -27,4 +36,15 @@ table td {
     border-style: solid;
     border-color: black;
     background-color: white;
+}
+
+.box{
+    padding-left:30px;
+    padding-right:30px;
+    padding-bottom:30px;
+    padding-top:30px;
+    max-width:900px;
+    border-radius: 50px;
+    margin-left: auto;
+    margin-right: auto;
 }

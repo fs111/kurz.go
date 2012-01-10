@@ -10,29 +10,40 @@
     </head>
     <body>
         <script type="text/javascript">
-            $(document).ready(function() {
-                    var monthNames = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+
+            var MONTHNAMES = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+            function formatDate(d){
+                return d.getDate() + " " + MONTHNAMES[d.getMonth()] + " "
+                    + d.getFullYear();
+            }
+            function formatURL(url){
+                var clean = url.replace("http://", "");
+                clean = clean.replace("https://", "");
+                return "<a href=\"" + url +"\">" 
+                       + clean
+                       + "</a>";
+            }
+
+            $(document).ready(function() {
                     $.getJSON("/latest/25", function( obj ) { 
                         var allUrls = obj["urls"];
                         for (var i = 0; i < allUrls.length; i++) {
-                        var url = allUrls[i];
+                        var kurl = allUrls[i];
 
-                        var d = new Date(url["CreationDate"] / 1000000);
+                        var d = new Date(kurl["CreationDate"] / 1000000);
                         $("table").append( 
                             "<tr>" 
-                            + "<td>" + url["ShortUrl"] + "</td>"
-                            + "<td>" + url["LongUrl"] + "</td>"
-                            + "<td>" + d.getDate() + " " + monthNames[d.getMonth()] + " "
-                            + d.getFullYear() + "</td>"
-                            + "<td>" + url["Clicks"] + "</td>"
+                            + "<td>" + formatURL(kurl["ShortUrl"]) + "</td>"
+                            + "<td>" + formatURL(kurl["LongUrl"]) + "</td>"
+                            + "<td>" + formatDate(d) + "</td>"
+                            + "<td>" + kurl["Clicks"] + "</td>"
                             + "</tr>");
                         } 
                         });
                     });
         </script>
-        
-        <div>
+        <div class="box">
             <table border="1">
                 <colgroup>
                     <col width="80">
@@ -48,5 +59,8 @@
                     <tr>
                     </table>
                 </div>
+               <div style="float:right;">powered by 
+                            <a href="https://github.com/fs111/kurz.go">kurz.go</a> made 
+                             by <a href="http://kel.pe/">fs111</a><div>
             </body>
         </html>
