@@ -12,7 +12,7 @@
         <script type="text/javascript">
             var monthNames = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-        $.getJSON("/latest/", function( obj ) { 
+        $.getJSON("/latest/25", function( obj ) { 
             var allUrls = obj["urls"];
             for (var i = 0; i < allUrls.length; i++) {
                 var url = allUrls[i];
@@ -34,7 +34,7 @@
             <table border="1">
                 <colgroup>
                     <col width="80">
-                    <col width="200">
+                    <col width="600">
                     <col width="80">
                     <col width="50">
                 </colgroup>
