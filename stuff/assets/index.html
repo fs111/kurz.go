@@ -10,24 +10,26 @@
     </head>
     <body>
         <script type="text/javascript">
-            var monthNames = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-        $.getJSON("/latest/25", function( obj ) { 
-            var allUrls = obj["urls"];
-            for (var i = 0; i < allUrls.length; i++) {
-                var url = allUrls[i];
-                
-                var d = new Date(url["CreationDate"] / 1000000);
-                $("table").append( 
-                    "<tr>" 
-                   + "<td>" + url["ShortUrl"] + "</td>"
-                   + "<td>" + url["LongUrl"] + "</td>"
-                   + "<td>" + d.getDate() + " " + monthNames[d.getMonth()] + " "
-                   + d.getFullYear() + "</td>"
-                   + "<td>" + url["Clicks"] + "</td>"
-                   + "</tr>");
-            } 
-        });
+            $(document).ready(function() {
+                    var monthNames = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+                    $.getJSON("/latest/25", function( obj ) { 
+                        var allUrls = obj["urls"];
+                        for (var i = 0; i < allUrls.length; i++) {
+                        var url = allUrls[i];
+
+                        var d = new Date(url["CreationDate"] / 1000000);
+                        $("table").append( 
+                            "<tr>" 
+                            + "<td>" + url["ShortUrl"] + "</td>"
+                            + "<td>" + url["LongUrl"] + "</td>"
+                            + "<td>" + d.getDate() + " " + monthNames[d.getMonth()] + " "
+                            + d.getFullYear() + "</td>"
+                            + "<td>" + url["Clicks"] + "</td>"
+                            + "</tr>");
+                        } 
+                        });
+                    });
         </script>
         
         <div>
