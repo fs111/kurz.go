@@ -18,15 +18,18 @@ GOFILES=\
 all: bin-dist
 
 
-bin-dist: $(TARG)
+bin-dist: $(TARG) assets
 	@mkdir -p $(MYTARGDIR)/etc/kurz/
 	@mkdir -p $(MYTARGDIR)/bin
 	@mkdir -p $(MYTARGDIR)/$(STATIC_DIR)
 	@cp -rf conf/kurz.conf $(MYTARGDIR)/etc/kurz/
 	@sed 's?=static?=$(STATIC_DIR)?' conf/$(CONF_NAME) > $(MYTARGDIR)/etc/kurz/$(CONF_NAME)
-	@cp stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
+	@cp -r stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
 	@cp $(TARG) $(MYTARGDIR)/bin
 	@git log --pretty=format:"kurz.go %H" -1 > $(MYTARGDIR)/$(STATIC_DIR)/_version
 
+
+assets:
+	cp -r stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
 
 include $(GOROOT)/src/Make.cmd
