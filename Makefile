@@ -17,19 +17,22 @@ GOFILES=\
 
 all: bin-dist
 
+.PHONY: clean bin-dist assets directories
 
 bin-dist: $(TARG) assets
-	@mkdir -p $(MYTARGDIR)/etc/kurz/
-	@mkdir -p $(MYTARGDIR)/bin
-	@mkdir -p $(MYTARGDIR)/$(STATIC_DIR)
 	@cp -rf conf/kurz.conf $(MYTARGDIR)/etc/kurz/
 	@sed 's?=static?=$(STATIC_DIR)?' conf/$(CONF_NAME) > $(MYTARGDIR)/etc/kurz/$(CONF_NAME)
-	@cp -r stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
 	@cp $(TARG) $(MYTARGDIR)/bin
 	@git log --pretty=format:"kurz.go %H" -1 > $(MYTARGDIR)/$(STATIC_DIR)/_version
 
 
-assets:
+assets: directories
 	@cp -r stuff/assets/* $(MYTARGDIR)/$(STATIC_DIR)
+
+
+directories:
+	@mkdir -p $(MYTARGDIR)/$(STATIC_DIR)
+	@mkdir -p $(MYTARGDIR)/etc/kurz/
+	@mkdir -p $(MYTARGDIR)/bin
 
 include $(GOROOT)/src/Make.cmd
