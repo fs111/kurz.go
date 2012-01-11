@@ -8,44 +8,17 @@
         rel='stylesheet' type='text/css'>
 
         <script type="text/javascript"
+            src="js/kurz.js">
+        </script>
+        <script type="text/javascript"
             src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
         </script>
     </head>
     <body>
         <script type="text/javascript">
-
-            var MONTHNAMES = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-            function formatDate(d){
-                return d.getDate() + " " + MONTHNAMES[d.getMonth()] + " "
-                    + d.getFullYear();
-            }
-            function formatURL(url){
-                var clean = url.replace("http://", "");
-                clean = clean.replace("https://", "");
-                clean = clean.substr(0, 52);
-                return "<a href=\"" + url +"\">" 
-                       + clean
-                       + "</a>";
-            }
-
             $(document).ready(function() {
-                    $.getJSON("/latest/25", function( obj ) { 
-                        var allUrls = obj["urls"];
-                        for (var i = 0; i < allUrls.length; i++) {
-                        var kurl = allUrls[i];
-
-                        var d = new Date(kurl["CreationDate"] / 1000000);
-                        $("table").append( 
-                            "<tr>" 
-                            + "<td>" + formatURL(kurl["ShortUrl"]) + "</td>"
-                            + "<td>" + formatURL(kurl["LongUrl"]) + "</td>"
-                            + "<td>" + formatDate(d) + "</td>"
-                            + "<td>" + kurl["Clicks"] + "</td>"
-                            + "</tr>");
-                        } 
-                        });
-                    });
+               loadKurls(25);
+             });
         </script>
         <div class="box">
             <table border="1">
