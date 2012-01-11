@@ -23,6 +23,7 @@
             function formatURL(url){
                 var clean = url.replace("http://", "");
                 clean = clean.replace("https://", "");
+                clean = clean.substr(0, 52);
                 return "<a href=\"" + url +"\">" 
                        + clean
                        + "</a>";
@@ -50,7 +51,7 @@
             <table border="1">
                 <colgroup>
                     <col width="80">
-                    <col width="600">
+                    <col width="500">
                     <col width="80">
                     <col width="50">
                 </colgroup>
