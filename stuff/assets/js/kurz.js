@@ -23,13 +23,16 @@ function loadKurls(howmany){
             var kurl = allUrls[i];
 
             var d = new Date(kurl["CreationDate"] / 1000000);
-            $("table").append( 
-                "<tr>" 
-                + "<td>" + formatURL(kurl["ShortUrl"]) + "</td>"
-                + "<td>" + formatURL(kurl["LongUrl"]) + "</td>"
-                + "<td>" + formatDate(d) + "</td>"
-                + "<td>" + kurl["Clicks"] + "</td>"
-                + "</tr>");
+            $("table").addRow({ 
+                newRow: "<tr>" 
+                  + "<td>" + formatURL(kurl["ShortUrl"]) + "</td>"
+                  + "<td>" + formatURL(kurl["LongUrl"]) + "</td>"
+                  + "<td>" + formatDate(d) + "</td>"
+                  + "<td>" + kurl["Clicks"] + "</td>"
+                  + "</tr>",
+                rowSpeed: 700
+            
+            });
         } 
     });
 }
