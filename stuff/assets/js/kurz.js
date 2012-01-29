@@ -17,13 +17,15 @@ function formatURL(url){
 }
 
 function loadKurls(howmany){
+
+    $('#data tr:not(:first)').remove();
     $.getJSON("/latest/" + howmany, function( obj ) { 
         var allUrls = obj["urls"];
         for (var i = 0; i < allUrls.length; i++) {
             var kurl = allUrls[i];
 
             var d = new Date(kurl["CreationDate"] / 1000000);
-            $("table").addRow({ 
+            $("#data").addRow({ 
                 newRow: "<tr>" 
                   + "<td>" + formatURL(kurl["ShortUrl"]) + "</td>"
                   + "<td>" + formatURL(kurl["LongUrl"]) + "</td>"
