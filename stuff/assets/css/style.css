@@ -1,50 +1,235 @@
+/* 
+html5doctor.com Reset Stylesheet
+v1.6.1
+Last Updated: 2010-09-17
+Author: Richard Clark - http://richclarkdesign.com 
+Twitter: @rich_clark
+*/
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+    margin:0;
+    padding:0;
+    border:0;
+    outline:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+
 body {
-    background-color:#6C7B80;
-	text-align:left;
-    font-family: 'Terminal Dosis',sans-serif;
-    font-size: 16pt;
-    color:#000;
+    line-height:1;
 }
+
+article,aside,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section { 
+    display:block;
+}
+
+nav ul {
+    list-style:none;
+}
+
+blockquote, q {
+    quotes:none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content:'';
+    content:none;
+}
+
 a {
-    color:#000;
+    margin:0;
+    padding:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
 }
-a:link {text-decoration:none;}
-a:visited {text-decoration:none;}
-a:hover {text-decoration:underline;}
-a:active {text-decoration:none;}
-img {  border-style: none; }
+
+/* change colours to suit your needs */
+ins {
+    background-color:#ff9;
+    color:#000;
+    text-decoration:none;
+}
+
+/* change colours to suit your needs */
+mark {
+    background-color:#ff9;
+    color:#000; 
+    font-style:italic;
+    font-weight:bold;
+}
+
+del {
+    text-decoration: line-through;
+}
+
+abbr[title], dfn[title] {
+    border-bottom:1px dotted;
+    cursor:help;
+}
 
 table {
-    border-width: 1px;
-    border-spacing: 2px;
-    border-style: outset;
-    border-color: gray;
-    border-collapse: collapse;
-    background-color: white;
-}
-table th {
-    border-width: 1px;
-    padding: 3px;
-    border-style: solid;
-    border-color: black;
-    background-color: white;
-    -moz-border-radius: ;
-}
-table td {
-    border-width: 1px;
-    padding: 5px;
-    border-style: solid;
-    border-color: black;
-    background-color: white;
+    border-collapse:collapse;
+    border-spacing:0;
 }
 
-.box{
-    padding-left:30px;
-    padding-right:30px;
-    padding-bottom:30px;
-    padding-top:30px;
-    max-width:900px;
-    border-radius: 50px;
-    margin-left: auto;
-    margin-right: auto;
+/* change border colour to suit your needs */
+hr {
+    display:block;
+    height:1px;
+    border:0;   
+    border-top:1px solid #cccccc;
+    margin:1em 0;
+    padding:0;
+}
+
+input, select {
+    vertical-align:middle;
+}
+
+/* Styles for kurz.go */
+
+body {
+	background: #192731;
+	color: #333;
+	font-family: "Asap", Helvetica, Arial, sans-serif;
+	font-size: 16px;
+	line-height: 1.4em;
+	font-weight: 400;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:link,
+a:visited {
+	color: #000;	
+	-webkit-transition: all 0.5s ease-out;
+	   -moz-transition: all 0.5s ease-out;
+	    -ms-transition: all 0.5s ease-out;
+	     -o-transition: all 0.5s ease-out;
+	        transition: all 0.5s ease-out;
+}
+
+a:hover {
+	color: #c00;
+	-webkit-transition: all 0.5s ease-out;
+	   -moz-transition: all 0.5s ease-out;
+	    -ms-transition: all 0.5s ease-out;
+	     -o-transition: all 0.5s ease-out;
+	        transition: all 0.5s ease-out;
+}
+
+#container {
+	width: 750px;
+	padding: 9px; 
+	margin: 9px auto;
+	background: #d7dbde url("../img/corner.png") top right no-repeat;
+	overflow: auto;
+}
+
+header {
+	clear: both;
+	float: left;
+	width: 100%;
+	padding: 0 0 9px 0;
+	border-bottom: 1px dotted #192731;
+	margin-bottom: 36px;
+}
+
+section {
+	clear: both;
+	float: left;
+	width: 100%;
+}
+
+table {
+	border-collapse: none; /* ??? */
+	width: 100%;
+	font-size: 14px;
+}
+
+tr {
+	background: #d7dbde;
+	-webkit-transition: all 0.5s ease-out;
+	   -moz-transition: all 0.5s ease-out;
+	    -ms-transition: all 0.5s ease-out;
+	     -o-transition: all 0.5s ease-out;
+	        transition: all 0.5s ease-out;
+}
+
+tr:hover {
+	background: #fadc81;
+	-webkit-transition: all 0.5s ease-out;
+	   -moz-transition: all 0.5s ease-out;
+	    -ms-transition: all 0.5s ease-out;
+	     -o-transition: all 0.5s ease-out;
+	        transition: all 0.5s ease-out;
+}
+
+th {
+	border-bottom: 1px solid #192731;
+	text-align: left;
+	padding: 3px;
+}
+
+th.short {
+	width: 114px;
+}
+
+th.long {
+	width: 324px;
+}
+
+th.date {
+	width: 114px;
+}
+
+th.clicks {
+	width: 54px;
+}
+
+td {
+	border-bottom: 1px solid #e7e9eb;
+}
+
+td.date,
+td.clicks {
+	padding: 2px 3px;
+}
+
+td a {
+	padding: 2px 3px;
+	display: block;
+}
+
+td a:hover {
+	background: #192731;
+	color: #fff;
+}
+
+footer {
+	clear: both;
+	float: left;
+	width: 100%;
+	margin-top: 36px;
+	padding: 9px 0;
+	border-top: 2px solid #192731;
+	text-align: right;
+	font-size: 12px;
 }

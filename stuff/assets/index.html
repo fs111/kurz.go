@@ -1,45 +1,37 @@
-<!DOCTYPE HTML>
+<!doctype html>
 <html>
-    <head>
-        <title>kurz.go</title>
-        <link rel="stylesheet" type="text/css" href="css/style.css"> 
-
-        <link href='http://fonts.googleapis.com/css?family=Terminal+Dosis:300'
-        rel='stylesheet' type='text/css'>
-
-        <script type="text/javascript"
-            src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js">
-        </script>
-        <script type="text/javascript" src="js/jquery.anirows.js"> </script>
-        <script type="text/javascript" src="js/kurz.js"> </script>
-    </head>
-    <body>
-        <script type="text/javascript">
-            $(document).ready(function() {
-               loadKurls(25);
-             });
-        </script>
-        <div style="text-align:center;">
-            <img src="img/logo_optimized.png"> 
-        </div>
-        <div class="box">
-            <table border="1">
-                <colgroup>
-                    <col width="80">
-                    <col width="500">
-                    <col width="140">
-                    <col width="50">
-                </colgroup>
-                <tr>
-                    <th>short url</th>
-                    <th>long url</th>
-                    <th>creation date</th>
-                    <th>clicks</th>
-                    <tr>
-                    </table>
-                </div>
-               <div style="float:right;">powered by 
-                            <a href="https://github.com/fs111/kurz.go">kurz.go</a> made 
-                             by <a href="http://kel.pe/">fs111</a><div>
-            </body>
-        </html>
+<head>
+	<title>kurz.go</title>
+	<meta name="description" content="Kurz.go is a " />
+	<link href="http://fonts.googleapis.com/css?family=Asap:400,700&subset=latin,latin-ext" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<body>
+<div id="container">
+	<header>
+		<img src="img/kurz-go.png" alt="kurz.go" />
+	</header>
+	<section>
+		<table>
+			<tr>
+				<th scope="col" class="short">Short URL</th>
+				<th scope="col" class="long">Long URL</th>
+				<th scope="col" class="date">Creation Date</th>
+				<th scope="col" class="clicks">Clicks</th>
+			</tr>
+		</table>
+	</section>
+	<footer>
+		<p>Powered by <a href="https://github.com/fs111/kurz.go">kurz.go</a>, made by <a href="http://kel.pe/">fs111</a>, designed by <a href="http://vormplus.be/">vormplus</a>.</p>
+	</footer>
+</div>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.anirows.js"> </script>
+<script type="text/javascript" src="js/kurz.js"> </script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		loadKurls(25);
+	});
+</script>
+</body>
+</html>

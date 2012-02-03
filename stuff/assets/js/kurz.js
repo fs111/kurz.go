@@ -1,13 +1,10 @@
 var MONTHNAMES = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
-
 function formatDate(d){
     return d.getDate() + " " + MONTHNAMES[d.getMonth()] + " "
         + d.getFullYear();
 }
-
-
 
 function formatURL(url){
     var clean = url.replace("http://", "");
@@ -25,10 +22,10 @@ function loadKurls(howmany){
             var d = new Date(kurl["CreationDate"] / 1000000);
             $("table").addRow({ 
                 newRow: "<tr>" 
-                  + "<td>" + formatURL(kurl["ShortUrl"]) + "</td>"
-                  + "<td>" + formatURL(kurl["LongUrl"]) + "</td>"
-                  + "<td>" + formatDate(d) + "</td>"
-                  + "<td>" + kurl["Clicks"] + "</td>"
+                  + "<td class=\"short\">" + formatURL(kurl["ShortUrl"]) + "</td>"
+                  + "<td class=\"long\">" + formatURL(kurl["LongUrl"]) + "</td>"
+                  + "<td class=\"date\">" + formatDate(d) + "</td>"
+                  + "<td class=\"clicks\">" + kurl["Clicks"] + "</td>"
                   + "</tr>",
                 rowSpeed: 700
             
