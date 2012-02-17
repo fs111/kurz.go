@@ -31,7 +31,15 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		loadKurls(25);
+
+        // enables twitter style reload of the table by just pressing "."
+        $(document).keypress(function(e){
+            if (e.which == 46){
+                loadKurls(25); 
+           };
+        });
 	});
+    
 </script>
 </body>
 </html>
