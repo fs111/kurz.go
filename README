@@ -76,7 +76,7 @@ latest urls on that page, just press "." and the table will be refreshed.
 
 Testing it out
 --------------
-The 'stuff' directory contains a shell-script that imports the csv file into
+The 'stuff' directory contains a shell-script that imports a csv file into
 kurz.go. Just try it out!
 
 Note: The csv file might contain some NSFW urls, I found it on the interwebs
