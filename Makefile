@@ -30,7 +30,6 @@ clean:
 
 bin-dist: $(TARG) assets
 	@cp -rf conf/kurz.conf $(MYTARGDIR)/etc/kurz/
-	@cp -rf stuff/init-script/kurz $(MYTARGDIR)/etc/rc.d/init.d/
 	@sed 's?=static?=$(STATIC_DIR)?' conf/$(CONF_NAME) > $(MYTARGDIR)/etc/kurz/$(CONF_NAME)
 	@cp $(TARG) $(MYTARGDIR)/$(PREFIX)/bin
 	@git log --pretty=format:"kurz.go %H" -1 > $(MYTARGDIR)/$(STATIC_DIR)/_version
