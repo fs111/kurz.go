@@ -44,12 +44,12 @@ will do the expected thing an redirect you to the original URL. All
 functionality is shown below:
 
 # store a URL
-$ curl http://localhost:9999/shorten/ --data-urlencode "url=https://github.com/fs111/kurz.go"
+$ curl -L http://localhost:9999/shorten/ --data-urlencode "url=https://github.com/fs111/kurz.go"
 
 {"Key":"eIi","ShortUrl":"http://localhost:9999/eIi","LongUrl":"http://github.com/fs111/kurz.go","CreationDate":1321486517214982000,"Clicks":0}
 
 # open a URL
-$ curl http://localhost:9999/eIi
+$ curl -L http://localhost:9999/eIi
 
 Redirecting to: http://github.com/fs111/kurz.go
 
