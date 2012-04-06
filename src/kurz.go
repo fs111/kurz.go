@@ -136,12 +136,7 @@ func isValidUrl(rawurl string) (u *url.URL, err error) {
 // function to shorten and store a url
 func shorten(w http.ResponseWriter, r *http.Request){
 	host := config.GetStringDefault("hostname", "localhost")
-    var leUrl string
-    if (r.Method == "GET"){
-        leUrl = mux.Vars(r)["url"]
-    }else{
-        leUrl = r.FormValue("url")
-    }
+    leUrl := r.FormValue("url")
 	theUrl, err := isValidUrl(string(leUrl))
 	if err == nil {
 		ctr, _ := redis.Incr(COUNTER)
