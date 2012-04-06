@@ -8,7 +8,7 @@ kurz.go - a url shortener in go
 --------------------------------
 
 kurz.go is my attempt to write a program that is actually useful in go. Right
-now it is in alpha stage, but will eventually grow into a the real thing.
+now it is in beta stage.
 
 Right now it can shorten URLs, redirect and list the latest stored URLs. All
 urls are stored in a redis (http://redis.io) instance.
@@ -17,20 +17,17 @@ urls are stored in a redis (http://redis.io) instance.
 Compiling kurz.go
 -----------------
 
-Next to having a full install of go itself, kurz.go requires web.go and godis to
-be installed. For installing go itself, please follow the fine instructions at
-http://golang.org
+Next to having a full install of go itself, kurz.go requires gorilla.mux and
+godis to be installed. For installing go itself, please follow the fine
+instructions at http://golang.org
 
 For installing web.go do:
 
-    $ git clone https://github.com/hoisie/web.go.git
-    $ cd web.go
-    $ make install (should work against the latest weekly release)
+    $ go get code.google.com/p/gorilla/mux
 
-for isntalling godis do:
-    $ git clone https://github.com/simonz05/godis.git
-    $ cd godis
-    $ make install
+for installing godis do:
+
+    $ go get github.com/simonz05/godis
 
 Note: These modules will be installed into your $GOROOT, so make sure it is
 writable.
@@ -38,7 +35,7 @@ writable.
 Once the dependecies are installed, check out kurz.go:
     $ git https://github.com/fs111/kurz.go
     $ make
-    $ ./kurz conf/kurz.conf #assumes that redis is up and running
+    $ ./usr/bin/kurz etc/kurz/kurz.conf #assumes that redis is up and running
 
 In order to shorten a url POST it to http://localhost:9999/shorten/ with the
 parameter url set to the long url. In return, you will get a json document
@@ -69,6 +66,13 @@ $ curl  http://localhost:9999/latest/1
 All urls are stored in redis and if you set it up so, that it persists data to
 disk, the state can be kept forever. Since there is no real state within
 kurz.go, you could run multiple instances of it, but I have not tried it yet.
+
+UI
+--
+The amazing @vormplus made a great looking frontend for kurz.go, which you can
+see, if you visit http://localhost:9999/index.htm. If you want to reload the
+latest urls on that page, just press "." and the table will be refreshed.
+
 
 Testing it out
 --------------
