@@ -5,7 +5,7 @@ endif
 CONF_NAME=kurz.conf
 
 ifeq ($(PREFIX),)
-	PREFIX:=/usr
+	PREFIX:=usr
 endif
 
 ifeq ($(STATIC_DIR),)

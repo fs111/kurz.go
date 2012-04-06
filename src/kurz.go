@@ -3,15 +3,18 @@ package main
 import (
 	"encoding/json"
 	"errors"
+    "io"
+    "os"
+    "path"
 	"flag"
 	"fmt"
-	"github.com/simonz05/godis"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
-	"github.com/hoisie/web.go"
+    "code.google.com/p/gorilla/mux"
+	"github.com/simonz05/godis"
 )
 
 const (
@@ -78,41 +81,44 @@ func load(key string) (*KurzUrl, error) {
 	return nil, errors.New("unknown key: " + key)
 }
 
-// function to display the info about a KurzUrl given by it's Key
-func info(ctx *web.Context, short string) {
+func fileExists(dir string) bool {
+    info, err := os.Stat(dir)
+    if err != nil {
+        return false
+    }
 
-	if strings.HasSuffix(short, "+") {
-		short = strings.Replace(short, "+", "", 1)
-	}
+    return !info.IsDir()
+}
+
+
+// function to display the info about a KurzUrl given by it's Key
+func info(w http.ResponseWriter, r *http.Request){
+    short := mux.Vars(r)["short"]
+    if strings.HasSuffix(short, "+"){
+        short = strings.Replace(short, "+", "", 1)
+    }
+
 	kurl, err := load(short)
 	if err == nil {
-		ctx.SetHeader("Content-Type", "application/json", true)
-		ctx.Write(kurl.Json())
-		ctx.WriteString("\n")
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(kurl.Json())
+		io.WriteString(w, "\n")
 	} else {
-		ctx.Redirect(http.StatusNotFound, ROLL)
+		http.Redirect(w, r, ROLL, http.StatusNotFound)
 	}
 }
 
 // function to resolve a shorturl and redirect
-func resolve(ctx *web.Context, short string) {
+func resolve(w http.ResponseWriter, r *http.Request){
+
+    short := mux.Vars(r)["short"]
 	kurl, err := load(short)
 	if err == nil {
 		go redis.Hincrby(kurl.Key, "Clicks", 1)
-		ctx.Redirect(http.StatusMovedPermanently,
-			kurl.LongUrl)
+		http.Redirect(w, r, kurl.LongUrl, http.StatusMovedPermanently)
 	} else {
-		ctx.Redirect(http.StatusMovedPermanently,
-			ROLL)
+		http.Redirect(w, r, ROLL, http.StatusMovedPermanently)
 	}
-}
-
-// serves the index page aka "/", which is a redirect to 
-// whatever has been configured externally or a very
-// special music video
-func index(ctx *web.Context) {
-	redirect := config.GetStringDefault("index", ROLL)
-	ctx.Redirect(http.StatusMovedPermanently, redirect)
 }
 
 // Determines if the string rawurl is a valid URL to be stored.
@@ -128,26 +134,32 @@ func isValidUrl(rawurl string) (u *url.URL, err error) {
 }
 
 // function to shorten and store a url
-func shorten(ctx *web.Context, data string) {
+func shorten(w http.ResponseWriter, r *http.Request){
 	host := config.GetStringDefault("hostname", "localhost")
-	r, _ := ctx.Params["url"]
-	theUrl, err := isValidUrl(string(r))
+    var leUrl string
+    if (r.Method == "GET"){
+        leUrl = mux.Vars(r)["url"]
+    }else{
+        leUrl = r.FormValue("url")
+    }
+	theUrl, err := isValidUrl(string(leUrl))
 	if err == nil {
 		ctr, _ := redis.Incr(COUNTER)
 		encoded := Encode(ctr)
 		location := fmt.Sprintf("%s://%s/%s", HTTP, host, encoded)
 		store(encoded, location, theUrl.String())
 		// redirect to the info page
-		ctx.Redirect(http.StatusMovedPermanently, location + "+")
+		http.Redirect(w, r,  location + "+", http.StatusMovedPermanently)
 	} else {
-		ctx.Redirect(http.StatusNotFound, ROLL)
+		http.Redirect(w, r, ROLL, http.StatusNotFound)
 	}
 }
 
 //Returns a json array with information about the last shortened urls. If data 
 // is a valid integer, that's the amount of data it will return, otherwise
 // a maximum of 10 entries will be returned.
-func latest(ctx *web.Context, data string) {
+func latest(w http.ResponseWriter, r *http.Request){
+    data := mux.Vars(r)["data"]
 	howmany, err := strconv.ParseInt(data, 10, 64)
 	if err != nil {
 		howmany = 10
@@ -157,23 +169,41 @@ func latest(ctx *web.Context, data string) {
 	last := c.Int64()
 	upTo := (last - howmany)
 
-	ctx.SetHeader("Content-Type", "application/json", true)
-	ctx.WriteString("{ \"urls\" : [")
+	w.Header().Set("Content-Type", "application/json")
+	io.WriteString(w, "{ \"urls\" : [")
 	for i := last; i > upTo && i > 0; i -= 1 {
 		kurl, err := load(Encode(i))
 		if err == nil {
-			ctx.Write(kurl.Json())
+			w.Write(kurl.Json())
 			if i != upTo+1 {
-				ctx.WriteString(",")
+				io.WriteString(w, ",")
 			}
 		}
 	}
-	ctx.WriteString("] }")
-	ctx.WriteString("\n")
+	io.WriteString(w, "] }")
+	io.WriteString(w, "\n")
 }
 
-// bootstraps the server
-func bootstrap(path string) error {
+
+func static(w http.ResponseWriter, r *http.Request){
+    fname := mux.Vars(r)["fileName"]
+    // empty means, we want ot serve the index file. Due to a bug in http.serveFile
+    // the file cannot be called index.html, anything else is fine.
+    if fname == ""{
+        fname = "index.htm"
+    }
+    staticDir := config.GetStringDefault("static-directory", "")
+    staticFile := path.Join(staticDir, fname)
+    if fileExists(staticFile){
+        http.ServeFile(w, r, staticFile)
+    }
+}
+
+
+func main() {
+    flag.Parse()
+	path := flag.Arg(0)
+
 	config = NewConfig(path)
 	config.Parse()
 
@@ -183,30 +213,23 @@ func bootstrap(path string) error {
 
 	redis = godis.New(host, db, passwd)
 
-	web.Config.StaticDir = config.GetStringDefault("static-directory", "")
+    router := mux.NewRouter()
+	router.HandleFunc("/shorten/{url:(.*$)}", shorten)
 
-	web.Post("/shorten/(.*)", shorten)
-	// support for Get makes it easier to implement a bookmarklet
-	web.Get("/shorten/(.*)", shorten)
+    router.HandleFunc("/{short:([a-zA-Z0-9]+$)}", resolve)
+	router.HandleFunc("/{short:([a-zA-Z0-9]+)\\+$}", info)
+	router.HandleFunc("/info/{short:[a-zA-Z0-9]+}", info)
+	router.HandleFunc("/latest/{data:[0-9]+}", latest)
 
-    web.Get("/", index)
+	router.HandleFunc("/{fileName:(.*$)}", static)
 
-	web.Get("/([a-zA-Z0-9]*)", resolve)
-	web.Get("/([a-zA-Z0-9]*)\\+", info)
-	web.Get("/latest/([0-9]*)", latest)
-	web.Get("/info/([a-zA-Z0-9]*)", info)
 
-	return nil
-}
 
-// main function that starts everything
-func main() {
-	flag.Parse()
-	cfgFile := flag.Arg(0)
-	err := bootstrap(cfgFile)
-	if err == nil {
-		listen := config.GetStringDefault("listen", "0.0.0.0")
-		port := config.GetStringDefault("port", "9999")
-		web.Run(fmt.Sprintf("%s:%s", listen, port))
-	}
+    listen := config.GetStringDefault("listen", "0.0.0.0")
+    port := config.GetStringDefault("port", "9999")
+    s := &http.Server{
+        Addr:           listen + ":" + port,
+        Handler:        router,
+    }
+    s.ListenAndServe()
 }
