@@ -20,7 +20,7 @@ CLEANFILES=$(MYTARGDIR)
 all: bin-dist
 
 
-$(TARG):
+$(TARG): src/*.go
 	@go build -o $(TARG) src/*.go
 
 
