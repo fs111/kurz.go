@@ -21,7 +21,7 @@ Next to having a full install of go itself, kurz.go requires gorilla.mux and
 godis to be installed. For installing go itself, please follow the fine
 instructions at http://golang.org
 
-For installing web.go do:
+For installing gorilla/mux do:
 
     $ go get code.google.com/p/gorilla/mux
 
