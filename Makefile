@@ -23,6 +23,8 @@ all: bin-dist
 $(TARG): src/*.go
 	@go build -o $(TARG) src/*.go
 
+test: src/*.go
+	go test src/*.go
 
 clean:
 	@rm -r $(CLEANFILES)
@@ -45,4 +47,4 @@ directories:
 	@mkdir -p $(MYTARGDIR)/etc/rc.d/init.d/
 	@mkdir -p $(MYTARGDIR)/$(PREFIX)/bin
 
-.PHONY: clean bin-dist assets directories kurz
+.PHONY: clean bin-dist assets directories test
