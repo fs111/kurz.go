@@ -165,18 +165,17 @@ func latest(w http.ResponseWriter, r *http.Request){
 	upTo := (last - howmany)
 
 	w.Header().Set("Content-Type", "application/json")
-	io.WriteString(w, "{ \"urls\" : [")
+
+    var kurls = []*KurzUrl{}
+
 	for i := last; i > upTo && i > 0; i -= 1 {
 		kurl, err := load(Encode(i))
 		if err == nil {
-			w.Write(kurl.Json())
-			if i != upTo+1 {
-				io.WriteString(w, ",")
-			}
+            kurls = append(kurls, kurl)
 		}
 	}
-	io.WriteString(w, "] }")
-	io.WriteString(w, "\n")
+    s, _ := json.Marshal(kurls)
+    w.Write(s)
 }
 
 
