@@ -16,8 +16,7 @@ function formatURL(url){
 function loadKurls(howmany){
 
     $('#data tr:not(:first)').remove();
-    $.getJSON("/latest/" + howmany, function( obj ) { 
-        var allUrls = obj["urls"];
+    $.getJSON("/latest/" + howmany, function( allUrls ) { 
         for (var i = 0; i < allUrls.length; i++) {
             var kurl = allUrls[i];
 
