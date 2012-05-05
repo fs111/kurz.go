@@ -1,20 +1,20 @@
 package main
 
 import (
+	"code.google.com/p/gorilla/mux"
 	"encoding/json"
 	"errors"
-    "io"
-    "os"
-    "path"
 	"flag"
 	"fmt"
+	"github.com/simonz05/godis"
+	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
-    "code.google.com/p/gorilla/mux"
-	"github.com/simonz05/godis"
 )
 
 const (
@@ -82,21 +82,20 @@ func load(key string) (*KurzUrl, error) {
 }
 
 func fileExists(dir string) bool {
-    info, err := os.Stat(dir)
-    if err != nil {
-        return false
-    }
+	info, err := os.Stat(dir)
+	if err != nil {
+		return false
+	}
 
-    return !info.IsDir()
+	return !info.IsDir()
 }
 
-
 // function to display the info about a KurzUrl given by it's Key
-func info(w http.ResponseWriter, r *http.Request){
-    short := mux.Vars(r)["short"]
-    if strings.HasSuffix(short, "+"){
-        short = strings.Replace(short, "+", "", 1)
-    }
+func info(w http.ResponseWriter, r *http.Request) {
+	short := mux.Vars(r)["short"]
+	if strings.HasSuffix(short, "+") {
+		short = strings.Replace(short, "+", "", 1)
+	}
 
 	kurl, err := load(short)
 	if err == nil {
@@ -109,9 +108,9 @@ func info(w http.ResponseWriter, r *http.Request){
 }
 
 // function to resolve a shorturl and redirect
-func resolve(w http.ResponseWriter, r *http.Request){
+func resolve(w http.ResponseWriter, r *http.Request) {
 
-    short := mux.Vars(r)["short"]
+	short := mux.Vars(r)["short"]
 	kurl, err := load(short)
 	if err == nil {
 		go redis.Hincrby(kurl.Key, "Clicks", 1)
@@ -134,9 +133,9 @@ func isValidUrl(rawurl string) (u *url.URL, err error) {
 }
 
 // function to shorten and store a url
-func shorten(w http.ResponseWriter, r *http.Request){
+func shorten(w http.ResponseWriter, r *http.Request) {
 	host := config.GetStringDefault("hostname", "localhost")
-    leUrl := r.FormValue("url")
+	leUrl := r.FormValue("url")
 	theUrl, err := isValidUrl(string(leUrl))
 	if err == nil {
 		ctr, _ := redis.Incr(COUNTER)
@@ -144,7 +143,7 @@ func shorten(w http.ResponseWriter, r *http.Request){
 		location := fmt.Sprintf("%s://%s/%s", HTTP, host, encoded)
 		store(encoded, location, theUrl.String())
 		// redirect to the info page
-		http.Redirect(w, r,  location + "+", http.StatusMovedPermanently)
+		http.Redirect(w, r, location+"+", http.StatusMovedPermanently)
 	} else {
 		http.Redirect(w, r, ROLL, http.StatusNotFound)
 	}
@@ -153,8 +152,8 @@ func shorten(w http.ResponseWriter, r *http.Request){
 //Returns a json array with information about the last shortened urls. If data 
 // is a valid integer, that's the amount of data it will return, otherwise
 // a maximum of 10 entries will be returned.
-func latest(w http.ResponseWriter, r *http.Request){
-    data := mux.Vars(r)["data"]
+func latest(w http.ResponseWriter, r *http.Request) {
+	data := mux.Vars(r)["data"]
 	howmany, err := strconv.ParseInt(data, 10, 64)
 	if err != nil {
 		howmany = 10
@@ -166,36 +165,34 @@ func latest(w http.ResponseWriter, r *http.Request){
 
 	w.Header().Set("Content-Type", "application/json")
 
-    var kurls = []*KurzUrl{}
+	var kurls = []*KurzUrl{}
 
 	for i := last; i > upTo && i > 0; i -= 1 {
 		kurl, err := load(Encode(i))
 		if err == nil {
-            kurls = append(kurls, kurl)
+			kurls = append(kurls, kurl)
 		}
 	}
-    s, _ := json.Marshal(kurls)
-    w.Write(s)
+	s, _ := json.Marshal(kurls)
+	w.Write(s)
 }
 
-
-func static(w http.ResponseWriter, r *http.Request){
-    fname := mux.Vars(r)["fileName"]
-    // empty means, we want ot serve the index file. Due to a bug in http.serveFile
-    // the file cannot be called index.html, anything else is fine.
-    if fname == ""{
-        fname = "index.htm"
-    }
-    staticDir := config.GetStringDefault("static-directory", "")
-    staticFile := path.Join(staticDir, fname)
-    if fileExists(staticFile){
-        http.ServeFile(w, r, staticFile)
-    }
+func static(w http.ResponseWriter, r *http.Request) {
+	fname := mux.Vars(r)["fileName"]
+	// empty means, we want to serve the index file. Due to a bug in http.serveFile
+	// the file cannot be called index.html, anything else is fine.
+	if fname == "" {
+		fname = "index.htm"
+	}
+	staticDir := config.GetStringDefault("static-directory", "")
+	staticFile := path.Join(staticDir, fname)
+	if fileExists(staticFile) {
+		http.ServeFile(w, r, staticFile)
+	}
 }
-
 
 func main() {
-    flag.Parse()
+	flag.Parse()
 	path := flag.Arg(0)
 
 	config = NewConfig(path)
@@ -207,23 +204,21 @@ func main() {
 
 	redis = godis.New(host, db, passwd)
 
-    router := mux.NewRouter()
+	router := mux.NewRouter()
 	router.HandleFunc("/shorten/{url:(.*$)}", shorten)
 
-    router.HandleFunc("/{short:([a-zA-Z0-9]+$)}", resolve)
+	router.HandleFunc("/{short:([a-zA-Z0-9]+$)}", resolve)
 	router.HandleFunc("/{short:([a-zA-Z0-9]+)\\+$}", info)
 	router.HandleFunc("/info/{short:[a-zA-Z0-9]+}", info)
 	router.HandleFunc("/latest/{data:[0-9]+}", latest)
 
 	router.HandleFunc("/{fileName:(.*$)}", static)
 
-
-
-    listen := config.GetStringDefault("listen", "0.0.0.0")
-    port := config.GetStringDefault("port", "9999")
-    s := &http.Server{
-        Addr:           listen + ":" + port,
-        Handler:        router,
-    }
-    s.ListenAndServe()
+	listen := config.GetStringDefault("listen", "0.0.0.0")
+	port := config.GetStringDefault("port", "9999")
+	s := &http.Server{
+		Addr:    listen + ":" + port,
+		Handler: router,
+	}
+	s.ListenAndServe()
 }
