@@ -204,6 +204,10 @@ th.clicks {
 	width: 54px;
 }
 
+th.tweet {
+    width: 34px;
+}
+
 td {
 	border-bottom: 1px solid #e7e9eb;
 }

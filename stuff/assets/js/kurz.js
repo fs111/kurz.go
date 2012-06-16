@@ -9,7 +9,7 @@ function formatDate(d){
 function formatURL(url){
     var clean = url.replace("http://", "");
     clean = clean.replace("https://", "");
-    clean = clean.substr(0, 52);
+    clean = clean.substr(0, 50);
     return "<a href=\"" + url +"\">" + clean + "</a>";
 }
 
