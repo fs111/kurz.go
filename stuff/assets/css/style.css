@@ -209,6 +209,7 @@ td {
 }
 
 td.date,
+td.tweet,
 td.clicks {
 	padding: 2px 3px;
 }
