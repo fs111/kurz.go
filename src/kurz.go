@@ -142,8 +142,14 @@ func shorten(w http.ResponseWriter, r *http.Request) {
 		encoded := Encode(ctr)
 		location := fmt.Sprintf("%s://%s/%s", HTTP, host, encoded)
 		store(encoded, location, theUrl.String())
-		// redirect to the info page
-		http.Redirect(w, r, location+"+", http.StatusMovedPermanently)
+
+		home := r.FormValue("home")
+		if home != "" {
+			http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		} else {
+			// redirect to the info page
+			http.Redirect(w, r, location+"+", http.StatusMovedPermanently)
+		}
 	} else {
 		http.Redirect(w, r, ROLL, http.StatusNotFound)
 	}
