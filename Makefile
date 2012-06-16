@@ -27,8 +27,8 @@ test: src/*.go
 	go test src/*.go
 
 clean:
-	@rm -r $(CLEANFILES)
-	@rm -r $(TARG)
+	@rm -rf $(CLEANFILES)
+	@rm -rf $(TARG)
 
 bin-dist: $(TARG) assets
 	@cp -rf conf/kurz.conf $(MYTARGDIR)/etc/kurz/
