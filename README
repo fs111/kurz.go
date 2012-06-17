@@ -33,9 +33,11 @@ Note: These modules will be installed into your $GOROOT, so make sure it is
 writable.
 
 Once the dependecies are installed, check out kurz.go:
-    $ git https://github.com/fs111/kurz.go
+    $ git clone https://github.com/fs111/kurz.go
+    $ cd kurz.go
     $ make
-    $ ./usr/bin/kurz etc/kurz/kurz.conf #assumes that redis is up and running
+    $ cd target
+    $ usr/bin/kurz etc/kurz/kurz.conf #assumes that redis is up and running
 
 In order to shorten a url POST it to http://localhost:9999/shorten/ with the
 parameter url set to the long url. In return, you will get a json document
