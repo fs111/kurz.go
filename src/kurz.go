@@ -15,11 +15,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+    "hash/fnv"
 )
 
 const (
 	// special key in redis, that is our global counter
 	COUNTER = "__counter__"
+	IDS     = "__ids__"
 	HTTP    = "http"
 	ROLL    = "https://www.youtube.com/watch?v=jRHmvy5eaG4"
 )
@@ -59,6 +61,7 @@ func NewKurzUrl(key, shorturl, longurl string) *KurzUrl {
 // ones with the same url will be overwritten
 func store(key, shorturl, longurl string) *KurzUrl {
 	kurl := NewKurzUrl(key, shorturl, longurl)
+    go redis.Rpush(IDS, kurl.Key)
 	go redis.Hset(kurl.Key, "LongUrl", kurl.LongUrl)
 	go redis.Hset(kurl.Key, "ShortUrl", kurl.ShortUrl)
 	go redis.Hset(kurl.Key, "CreationDate", kurl.CreationDate)
@@ -135,11 +138,12 @@ func isValidUrl(rawurl string) (u *url.URL, err error) {
 // function to shorten and store a url
 func shorten(w http.ResponseWriter, r *http.Request) {
 	host := config.GetStringDefault("hostname", "localhost")
-	leUrl := r.FormValue("url")
-	theUrl, err := isValidUrl(string(leUrl))
+	theUrl, err := isValidUrl(r.FormValue("url"))
 	if err == nil {
-		ctr, _ := redis.Incr(COUNTER)
-		encoded := Encode(ctr)
+        hash := fnv.New32()
+        io.WriteString(hash, theUrl.String())
+		encoded := Encode(int64(hash.Sum32()))
+
 		location := fmt.Sprintf("%s://%s/%s", HTTP, host, encoded)
 		store(encoded, location, theUrl.String())
 
@@ -164,17 +168,18 @@ func latest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		howmany = 10
 	}
-	c, _ := redis.Get(COUNTER)
-
-	last := c.Int64()
+	last, _ := redis.Llen(IDS)
+    last = last - 1 // 0 based indexes
 	upTo := (last - howmany)
 
 	w.Header().Set("Content-Type", "application/json")
 
 	var kurls = []*KurzUrl{}
 
-	for i := last; i > upTo && i > 0; i -= 1 {
-		kurl, err := load(Encode(i))
+    keys, _ := redis.Lrange(IDS, int(upTo), int(last))
+
+    for _, key := range keys.StringArray() {
+		kurl, err := load(key)
 		if err == nil {
 			kurls = append(kurls, kurl)
 		}
