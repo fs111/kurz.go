@@ -31,6 +31,9 @@
 <script type="text/javascript" src="js/kurz.js"> </script>
 <script type="text/javascript">
 	$(document).ready(function() {
+        
+        document.title = window.location.hostname + " - " + document.title;
+
 		loadKurls(25);
 
         // enables twitter style reload of the table by just pressing "."
