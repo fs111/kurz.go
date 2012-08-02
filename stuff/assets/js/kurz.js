@@ -16,7 +16,7 @@ function formatURL(url){
 function createTweet(url){
     return "<a target=\"blank\" href=\"https://twitter.com/intent/tweet?text="
               +  encodeURIComponent(url) + "\">"
-              + "tw</a>";
+              + "<img src=\"img/tw.png\" alt=\"tw\"></a>";
 }
 
 function loadKurls(howmany){
@@ -41,4 +41,3 @@ function loadKurls(howmany){
         } 
     });
 }
-
