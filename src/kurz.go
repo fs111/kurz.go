@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/simonz05/godis"
+	"github.com/fs111/simpleconfig"
 	"io"
 	"net/http"
 	"net/url"
@@ -26,7 +27,7 @@ const (
 
 var (
 	redis  *godis.Client
-	config *Config
+	config *simpleconfig.Config
 )
 
 type KurzUrl struct {
@@ -201,8 +202,7 @@ func main() {
 	flag.Parse()
 	path := flag.Arg(0)
 
-	config = NewConfig(path)
-	config.Parse()
+	config, _ = simpleconfig.NewConfig(path)
 
 	host := config.GetStringDefault("redis.address", "tcp:localhost:6379")
 	db := config.GetIntDefault("redis.database", 0)
