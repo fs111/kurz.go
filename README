@@ -27,7 +27,7 @@ For installing gorilla/mux do:
 
 for installing godis do:
 
-    $ go get github.com/simonz05/godis
+    $ go get github.com/simonz05/godis/redis
 
 for installing simpleconfig do:
 
