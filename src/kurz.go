@@ -6,7 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/simonz05/godis"
+	godis "github.com/simonz05/godis/redis"
 	"github.com/fs111/simpleconfig"
 	"io"
 	"net/http"
