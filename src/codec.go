@@ -9,7 +9,7 @@ const (
 	// characters used for short-urls
 	SYMBOLS = "0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ"
 
-	// someone set us up the bomb !! 
+	// someone set us up the bomb !!
 	BASE = int64(len(SYMBOLS))
 )
 
@@ -26,7 +26,7 @@ func Encode(number int64) string {
 	return result
 }
 
-// Decodes a string given in our encoding and returns the decimal 
+// Decodes a string given in our encoding and returns the decimal
 // integer.
 func Decode(input string) int64 {
 	const floatbase = float64(BASE)

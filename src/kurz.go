@@ -6,8 +6,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	godis "github.com/simonz05/godis/redis"
 	"github.com/fs111/simpleconfig"
+	godis "github.com/simonz05/godis/redis"
 	"io"
 	"net/http"
 	"net/url"
@@ -22,7 +22,7 @@ const (
 	// special key in redis, that is our global counter
 	COUNTER = "__counter__"
 	HTTP    = "http"
-	ROLL    = "https://www.youtube.com/watch?v=jRHmvy5eaG4"
+    ROLL    = "https://www.youtube.com/watch?v=oHg5SJYRHA0"
 )
 
 var (
@@ -156,7 +156,7 @@ func shorten(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//Returns a json array with information about the last shortened urls. If data 
+//Returns a json array with information about the last shortened urls. If data
 // is a valid integer, that's the amount of data it will return, otherwise
 // a maximum of 10 entries will be returned.
 func latest(w http.ResponseWriter, r *http.Request) {
