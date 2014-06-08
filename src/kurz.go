@@ -22,12 +22,12 @@ const (
 	// special key in redis, that is our global counter
 	COUNTER = "__counter__"
 	HTTP    = "http"
-    ROLL    = "https://www.youtube.com/watch?v=oHg5SJYRHA0"
 )
 
 var (
 	redis  *godis.Client
 	config *simpleconfig.Config
+	filenotfound string
 )
 
 type KurzUrl struct {
@@ -104,7 +104,7 @@ func info(w http.ResponseWriter, r *http.Request) {
 		w.Write(kurl.Json())
 		io.WriteString(w, "\n")
 	} else {
-		http.Redirect(w, r, ROLL, http.StatusNotFound)
+		http.Redirect(w, r, filenotfound, http.StatusNotFound)
 	}
 }
 
@@ -117,7 +117,7 @@ func resolve(w http.ResponseWriter, r *http.Request) {
 		go redis.Hincrby(kurl.Key, "Clicks", 1)
 		http.Redirect(w, r, kurl.LongUrl, http.StatusMovedPermanently)
 	} else {
-		http.Redirect(w, r, ROLL, http.StatusMovedPermanently)
+		http.Redirect(w, r, filenotfound, http.StatusMovedPermanently)
 	}
 }
 
@@ -152,7 +152,7 @@ func shorten(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, location+"+", http.StatusMovedPermanently)
 		}
 	} else {
-		http.Redirect(w, r, ROLL, http.StatusNotFound)
+		http.Redirect(w, r, filenotfound, http.StatusNotFound)
 	}
 }
 
@@ -207,6 +207,8 @@ func main() {
 	host := config.GetStringDefault("redis.address", "tcp:localhost:6379")
 	db := config.GetIntDefault("redis.database", 0)
 	passwd := config.GetStringDefault("redis.password", "")
+  
+	filenotfound = config.GetStringDefault("filenotfound", "https://www.youtube.com/watch?v=oHg5SJYRHA0")
 
 	redis = godis.New(host, db, passwd)
 
