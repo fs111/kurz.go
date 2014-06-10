@@ -1,0 +1,7 @@
+description "kurz url shortner"
+
+start on filesystem and net-device-up IFACE!=lo
+
+respawn
+
+exec start-stop-daemon --start --make-pidfile --pidfile /var/run/kurz.pid --chuid nobody --exec /usr/bin/kurz /etc/kurz/kurz.conf
