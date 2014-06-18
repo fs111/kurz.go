@@ -204,7 +204,7 @@ func main() {
 
 	config, _ = simpleconfig.NewConfig(path)
 
-	host := config.GetStringDefault("redis.address", "tcp:localhost:6379")
+	host := config.GetStringDefault("redis.netaddress", "tcp:localhost:6379")
 	db := config.GetIntDefault("redis.database", 0)
 	passwd := config.GetStringDefault("redis.password", "")
   
