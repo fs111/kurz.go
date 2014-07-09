@@ -25,8 +25,8 @@ const (
 )
 
 var (
-	redis  *godis.Client
-	config *simpleconfig.Config
+	redis        *godis.Client
+	config       *simpleconfig.Config
 	filenotfound string
 )
 
@@ -141,7 +141,7 @@ func shorten(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		ctr, _ := redis.Incr(COUNTER)
 		encoded := Encode(ctr)
-		location := fmt.Sprintf("%s://%s/%s", HTTP, host, encoded)
+		location := fmt.Sprintf("%s://%s/%s", config.GetStringDefault("proto", HTTP), host, encoded)
 		store(encoded, location, theUrl.String())
 
 		home := r.FormValue("home")
