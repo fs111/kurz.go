@@ -1,4 +1,4 @@
- __                                    
+ __
 |  |--.--.--.----.-----.  .-----.-----.
 |    <|  |  |   _|-- __|__|  _  |  _  |
 |__|__|_____|__| |_____|__|___  |_____|
@@ -18,7 +18,7 @@ Compiling kurz.go
 -----------------
 
 Next to having a full install of go itself, kurz.go requires gorilla.mux,
-godis and simpleconfig to be installed. For installing go itself, please follow the fine
+godis, simpleconfig, and go-logging to be installed. For installing go itself, please follow the fine
 instructions at http://golang.org
 
 For installing gorilla/mux do:
@@ -32,6 +32,10 @@ for installing godis do:
 for installing simpleconfig do:
 
     $ go get github.com/fs111/simpleconfig
+
+for installing go-logging do:
+
+    $ go get github.com/op/go-logging
 
 Note: These modules will be installed into your $GOROOT, so make sure it is
 writable. Alternatively you can set $GOPATH and they will be installed there instead.
