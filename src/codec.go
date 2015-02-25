@@ -7,7 +7,7 @@ import (
 
 const (
 	// characters used for short-urls
-	SYMBOLS = "0123456789abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVXYZ"
+	SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 	// someone set us up the bomb !!
 	BASE = int64(len(SYMBOLS))
