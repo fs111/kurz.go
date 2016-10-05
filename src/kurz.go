@@ -1,7 +1,7 @@
 package main
 
 import (
-	"code.google.com/p/gorilla/mux"
+	"github.com/gorilla/mux"
 	"encoding/json"
 	"errors"
 	"flag"
