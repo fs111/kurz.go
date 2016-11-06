@@ -23,7 +23,7 @@ instructions at http://golang.org
 
 For installing gorilla/mux do:
 
-    $ go get code.google.com/p/gorilla/mux
+    $ go get github.com/gorilla/mux
 
 for installing godis do:
 
