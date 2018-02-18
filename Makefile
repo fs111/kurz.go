@@ -4,21 +4,15 @@ endif
 
 CONF_NAME=kurz.conf
 
-ifeq ($(PREFIX),)
-	PREFIX:=usr
-endif
-
 ifeq ($(STATIC_DIR),)
-	STATIC_DIR:=$(PREFIX)/share/kurz
+	STATIC_DIR:=share/kurz
 endif
 
 TARG=src/kurz
 
 CLEANFILES=$(MYTARGDIR)
 
-
 all: bin-dist
-
 
 $(TARG): src/*.go
 	@go build -o $(TARG) src/*.go
@@ -33,7 +27,7 @@ clean:
 bin-dist: $(TARG) assets
 	@cp -rf conf/kurz.conf $(MYTARGDIR)/etc/kurz/
 	@sed 's?=static?=$(STATIC_DIR)?' conf/$(CONF_NAME) > $(MYTARGDIR)/etc/kurz/$(CONF_NAME)
-	@cp $(TARG) $(MYTARGDIR)/$(PREFIX)/bin
+	@cp $(TARG) $(MYTARGDIR)/bin
 	@git log --pretty=format:"kurz.go %H" -1 > $(MYTARGDIR)/$(STATIC_DIR)/_version
 
 
@@ -44,7 +38,6 @@ assets: directories
 directories:
 	@mkdir -p $(MYTARGDIR)/$(STATIC_DIR)
 	@mkdir -p $(MYTARGDIR)/etc/kurz/
-	@mkdir -p $(MYTARGDIR)/etc/rc.d/init.d/
-	@mkdir -p $(MYTARGDIR)/$(PREFIX)/bin
+	@mkdir -p $(MYTARGDIR)/bin
 
 .PHONY: clean bin-dist assets directories test
